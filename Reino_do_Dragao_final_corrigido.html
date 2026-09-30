@@ -1,0 +1,1839 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Reino do Dragão | Sistema de Reservas</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=MedievalSharp&family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+
+<style>
+
+
+/* ==============================
+   RESET
+============================== */
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+
+/* ==============================
+   BODY
+============================== */
+
+body {
+
+    font-family: 'Poppins', sans-serif;
+
+    min-height: 100vh;
+
+    color: #f5e6c8;
+
+    overflow-x: hidden;
+
+    position: relative;
+
+    background:
+
+    linear-gradient(
+        rgba(0,0,0,0.88),
+        rgba(10,0,0,0.94)
+    ),
+
+    url("https://static.wikia.nocookie.net/rpg-rise-of-the-titans/images/6/6e/DragonRed.jpg/revision/latest/scale-to-width-down/500?cb=20190222000049&path-prefix=pt-br");
+
+    background-size: cover;
+
+    background-position: center;
+
+    background-attachment: fixed;
+}
+
+
+/* ==============================
+   EFEITOS
+============================== */
+
+body::before {
+
+    content: "";
+
+    position: fixed;
+
+    inset: 0;
+
+    background:
+
+    radial-gradient(
+        circle at top left,
+        rgba(255,0,0,0.18),
+        transparent 30%
+    ),
+
+    radial-gradient(
+        circle at bottom right,
+        rgba(255,120,0,0.15),
+        transparent 35%
+    ),
+
+    radial-gradient(
+        circle at center,
+        rgba(255,255,255,0.03),
+        transparent 45%
+    );
+
+    z-index: 0;
+
+    pointer-events: none;
+}
+
+
+/* ==============================
+   DRAGÕES
+============================== */
+
+.dragon {
+
+    position: fixed;
+
+    opacity: 0.10;
+
+    z-index: 0;
+
+    pointer-events: none;
+
+    filter:
+    drop-shadow(
+        0 0 25px
+        rgba(255,0,0,0.7)
+    );
+}
+
+
+.dragon1 {
+
+    width: 400px;
+
+    top: 80px;
+
+    left: -80px;
+
+    animation: voar1 8s infinite ease-in-out;
+}
+
+
+.dragon2 {
+
+    width: 360px;
+
+    bottom: 40px;
+
+    right: -60px;
+
+    transform: scaleX(-1);
+
+    animation: voar2 10s infinite ease-in-out;
+}
+
+
+.dragon3 {
+
+    width: 260px;
+
+    top: 45%;
+
+    left: 38%;
+
+    opacity: 0.05;
+
+    animation: girar 20s linear infinite;
+}
+
+
+/* ==============================
+   ANIMAÇÕES
+============================== */
+
+@keyframes voar1 {
+
+    0% {
+        transform: translateY(0);
+    }
+
+    50% {
+        transform: translateY(-25px);
+    }
+
+    100% {
+        transform: translateY(0);
+    }
+
+}
+
+
+@keyframes voar2 {
+
+    0% {
+        transform:
+        scaleX(-1)
+        translateY(0);
+    }
+
+    50% {
+        transform:
+        scaleX(-1)
+        translateY(-20px);
+    }
+
+    100% {
+        transform:
+        scaleX(-1)
+        translateY(0);
+    }
+
+}
+
+
+@keyframes girar {
+
+    from {
+        transform: rotate(0deg);
+    }
+
+    to {
+        transform: rotate(360deg);
+    }
+
+}
+
+
+/* ==============================
+   HEADER
+============================== */
+
+header {
+
+    position: relative;
+
+    z-index: 2;
+
+    text-align: center;
+
+    padding: 90px 20px;
+
+    background:
+    rgba(15,5,0,0.82);
+
+    border-bottom:
+    3px solid #8b0000;
+
+    box-shadow:
+    0 0 40px
+    rgba(255,0,0,0.25);
+}
+
+
+header h1 {
+
+    font-family:
+    'MedievalSharp',
+    cursive;
+
+    font-size: 85px;
+
+    color: #ffdf9d;
+
+    letter-spacing: 6px;
+
+    text-shadow:
+
+    0 0 10px #ff7b00,
+
+    0 0 20px #ff0000,
+
+    0 0 50px #8b0000;
+}
+
+
+header p {
+
+    margin-top: 20px;
+
+    font-family: 'Cinzel', serif;
+
+    letter-spacing: 4px;
+
+    font-size: 22px;
+
+    color: #f5d9b0;
+}
+
+
+/* ==============================
+   CONTAINER
+============================== */
+
+.container {
+
+    width: 92%;
+
+    max-width: 1450px;
+
+    margin: auto;
+
+    padding: 50px 0;
+
+    display: grid;
+
+    grid-template-columns:
+    1fr 1fr;
+
+    gap: 35px;
+
+    position: relative;
+
+    z-index: 2;
+}
+
+
+/* ==============================
+   CARDS
+============================== */
+
+.card {
+
+    background:
+    rgba(18,12,8,0.92);
+
+    border:
+    2px solid #7a1c00;
+
+    border-radius: 24px;
+
+    padding: 35px;
+
+    backdrop-filter: blur(10px);
+
+    box-shadow:
+
+    0 0 25px
+    rgba(255,80,0,0.18),
+
+    inset 0 0 20px
+    rgba(255,0,0,0.08);
+
+    transition: 0.4s;
+}
+
+
+.card:hover {
+
+    transform:
+    translateY(-5px);
+
+    box-shadow:
+
+    0 0 35px
+    rgba(255,90,0,0.35),
+
+    inset 0 0 20px
+    rgba(255,120,0,0.10);
+}
+
+
+/* ==============================
+   TITULOS
+============================== */
+
+h2 {
+
+    font-family:
+    'Cinzel',
+    serif;
+
+    font-size: 35px;
+
+    margin-bottom: 28px;
+
+    color: #ffcf8b;
+
+    text-shadow:
+    0 0 10px
+    rgba(255,120,0,0.3);
+}
+
+
+/* ==============================
+   FORMULÁRIO
+============================== */
+
+label {
+
+    display: block;
+
+    margin-top: 18px;
+
+    margin-bottom: 8px;
+
+    font-weight: 600;
+
+    color: #f1d5a7;
+}
+
+
+input {
+
+    width: 100%;
+
+    padding: 15px;
+
+    border-radius: 12px;
+
+    border:
+    1px solid #5c1b00;
+
+    background: #1b130f;
+
+    color: white;
+
+    font-size: 15px;
+
+    outline: none;
+
+    transition: 0.3s;
+}
+
+
+input:focus {
+
+    border:
+    1px solid #ff6a00;
+
+    box-shadow:
+    0 0 12px
+    rgba(255,106,0,0.4);
+}
+
+
+/* ==============================
+   BOTÃO
+============================== */
+
+button {
+
+    width: 100%;
+
+    margin-top: 30px;
+
+    padding: 18px;
+
+    border: none;
+
+    border-radius: 14px;
+
+    background:
+    linear-gradient(
+        45deg,
+        #7a1c00,
+        #d43c00
+    );
+
+    color: white;
+
+    font-size: 18px;
+
+    font-weight: bold;
+
+    cursor: pointer;
+
+    transition: 0.4s;
+
+    letter-spacing: 1px;
+}
+
+
+button:hover {
+
+    transform:
+    scale(1.03);
+
+    box-shadow:
+    0 0 20px
+    rgba(255,80,0,0.5);
+}
+
+
+/* ==============================
+   INFO
+============================== */
+
+.info {
+
+    margin-top: 25px;
+
+    padding: 18px;
+
+    border-radius: 15px;
+
+    background:
+    rgba(255,120,0,0.08);
+
+    border:
+    1px solid
+    rgba(255,120,0,0.2);
+
+    line-height: 1.7;
+}
+
+
+/* ==============================
+   RESERVAS
+============================== */
+
+.cardReserva {
+
+    background: #1a120d;
+
+    border-left:
+    5px solid #ff5e00;
+
+    padding: 22px;
+
+    border-radius: 18px;
+
+    margin-bottom: 20px;
+
+    animation:
+    aparecer 0.5s ease;
+
+    box-shadow:
+    0 0 18px
+    rgba(255,80,0,0.12);
+}
+
+
+.cardReserva h3 {
+
+    margin-bottom: 12px;
+
+    color: #ffd89c;
+
+    font-size: 23px;
+}
+
+
+.cardReserva p {
+
+    margin: 7px 0;
+}
+
+
+.status {
+
+    margin-top: 12px;
+
+    color: #ff843d;
+
+    font-weight: bold;
+}
+
+
+/* ==============================
+   BOTÃO CANCELAR
+============================== */
+
+.btnCancelar {
+
+    background:
+    linear-gradient(
+        45deg,
+        #5c0000,
+        #a00000
+    );
+
+    margin-top: 15px;
+
+    font-size: 15px;
+
+    padding: 12px;
+}
+
+
+.btnCancelar:hover {
+
+    box-shadow:
+    0 0 15px
+    rgba(255,0,0,0.5);
+}
+
+
+/* ==============================
+   AVISOS
+============================== */
+
+.aviso {
+
+    background:
+    rgba(255,120,0,0.08);
+
+    border-left:
+    5px solid #ff6a00;
+
+    padding: 18px;
+
+    border-radius: 12px;
+
+    margin-bottom: 15px;
+}
+
+
+.aviso h3 {
+
+    color: #ffd89c;
+
+    margin-bottom: 8px;
+}
+
+
+.aviso p {
+
+    line-height: 1.6;
+}
+
+
+/* ==============================
+   MENSAGENS
+============================== */
+
+.mensagem {
+
+    margin-top: 20px;
+
+    padding: 15px;
+
+    border-radius: 12px;
+
+    display: none;
+}
+
+
+.sucesso {
+
+    display: block;
+
+    background:
+    rgba(0,150,50,0.15);
+
+    border:
+    1px solid #168b3d;
+}
+
+
+.erro {
+
+    display: block;
+
+    background:
+    rgba(180,0,0,0.15);
+
+    border:
+    1px solid #a00000;
+}
+
+
+/* ==============================
+   ANIMAÇÃO
+============================== */
+
+@keyframes aparecer {
+
+    from {
+
+        opacity: 0;
+
+        transform:
+        translateY(20px);
+    }
+
+    to {
+
+        opacity: 1;
+
+        transform:
+        translateY(0);
+    }
+
+}
+
+
+/* ==============================
+   FOOTER
+============================== */
+
+footer {
+
+    margin-top: 50px;
+
+    padding: 30px;
+
+    text-align: center;
+
+    background:
+    rgba(0,0,0,0.82);
+
+    border-top:
+    2px solid #6e1800;
+
+    color: #d6b98a;
+
+    position: relative;
+
+    z-index: 2;
+}
+
+
+/* ==============================
+   RESPONSIVO
+============================== */
+
+@media(max-width:950px) {
+
+    .container {
+
+        grid-template-columns: 1fr;
+    }
+
+
+    header h1 {
+
+        font-size: 52px;
+    }
+
+
+    .dragon1,
+    .dragon2 {
+
+        width: 180px;
+    }
+
+
+    .dragon3 {
+
+        display: none;
+    }
+
+}
+
+
+
+/* ==============================
+   NAVEGAÇÃO
+============================== */
+
+.navegacao {
+    position: relative;
+    z-index: 10;
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+    padding: 18px;
+    background: rgba(0,0,0,0.88);
+    border-bottom: 2px solid #7a1c00;
+    flex-wrap: wrap;
+}
+
+.navegacao button {
+    width: auto;
+    margin: 0;
+    padding: 13px 22px;
+}
+
+.navegacao button.ativo {
+    box-shadow: 0 0 20px rgba(255,100,0,0.6);
+}
+
+.pagina {
+    display: none;
+}
+
+.pagina.ativa {
+    display: block;
+}
+
+.container-reserva {
+    width: 92%;
+    max-width: 1000px;
+    margin: auto;
+    padding: 50px 0;
+    position: relative;
+    z-index: 2;
+}
+
+.container-reservas {
+    width: 92%;
+    max-width: 1100px;
+    margin: auto;
+    padding: 50px 0;
+    position: relative;
+    z-index: 2;
+}
+
+.cardReserva {
+    background: #1a120d;
+    border-left: 5px solid #ff5e00;
+    padding: 22px;
+    border-radius: 18px;
+    margin-bottom: 20px;
+    animation: aparecer 0.5s ease;
+    box-shadow: 0 0 18px rgba(255,80,0,0.12);
+}
+
+.cardReserva h3 {
+    margin-bottom: 12px;
+    color: #ffd89c;
+    font-size: 23px;
+}
+
+.cardReserva p {
+    margin: 7px 0;
+}
+
+.status {
+    margin-top: 12px;
+    color: #ff843d;
+    font-weight: bold;
+}
+
+.btnCancelar {
+    background: linear-gradient(45deg, #5c0000, #a00000);
+    margin-top: 15px;
+    font-size: 15px;
+    padding: 12px;
+}
+
+.aviso {
+    background: rgba(255,120,0,0.08);
+    border-left: 5px solid #ff6a00;
+    padding: 18px;
+    border-radius: 12px;
+    margin-bottom: 15px;
+}
+
+.aviso h3 {
+    color: #ffd89c;
+    margin-bottom: 8px;
+}
+
+.aviso p {
+    line-height: 1.6;
+}
+
+.contador {
+    margin-bottom: 25px;
+    padding: 15px;
+    border-radius: 12px;
+    background: rgba(255,120,0,0.08);
+    border: 1px solid rgba(255,120,0,0.2);
+}
+
+.vazio {
+    text-align: center;
+    padding: 25px;
+    color: #d6b98a;
+}
+
+@media(max-width:950px) {
+    .container-reserva,
+    .container-reservas {
+        width: 94%;
+    }
+
+    .navegacao button {
+        width: 100%;
+    }
+}
+</style>
+</head>
+
+<body>
+
+<img class="dragon dragon1"
+src="https://pngimg.com/uploads/dragon/dragon_PNG8455.png"
+alt="">
+
+<img class="dragon dragon2"
+src="https://pngimg.com/uploads/dragon/dragon_PNG8456.png"
+alt="">
+
+<header>
+    <h1>Reino do Dragão</h1>
+    <p>⚔ Tome Cuidado Com o Fogo ⚔</p>
+</header>
+
+<!--
+    AS DUAS PÁGINAS ESTÃO NO MESMO ARQUIVO.
+    O JavaScript alterna entre elas.
+-->
+<nav class="navegacao">
+    <button id="btnReserva" class="ativo" onclick="mostrarPagina('reserva')">
+         Fazer Reserva
+    </button>
+
+    <button id="btnConfirmadas" onclick="mostrarPagina('confirmadas')">
+         Reservas Confirmadas
+    </button>
+
+    <button id="btnFuncionarios" onclick="window.location.href='Painel_Funcionarios_Reino_do_Dragao.html'">
+          Área dos Funcionários
+    </button>
+</nav>
+
+<!-- ==============================
+     PÁGINA DE RESERVA
+============================== -->
+
+<section id="paginaReserva" class="pagina ativa">
+
+    <main class="container-reserva">
+
+        <section class="card">
+
+            <h2>Reserva de Mesas</h2>
+
+            <form id="formReserva">
+
+                <label for="nome">Nome Completo</label>
+                <input type="text" id="nome" required>
+
+                <label for="email">Email</label>
+                <input type="email" id="email" required>
+
+                <label for="telefone">Telefone</label>
+                <input type="tel" id="telefone" required>
+
+                <label for="data">Data da Reserva</label>
+                <input type="date" id="data" required>
+<label for="pessoas">Quantidade de Pessoas</label>
+                <input
+                    type="number"
+                    id="pessoas"
+                    min="1"
+                    max="30"
+                    required
+                >
+
+                <button type="submit">
+                     Confirmar Reserva
+                </button>
+
+            </form>
+
+            <div id="mensagem" class="mensagem"></div>
+
+            <div class="info">
+
+                <strong>⚔ Regras do Reino:</strong>
+
+                <br><br>
+
+                • Máximo de
+                <strong>30 pessoas</strong>
+                por reserva.
+
+                <br>
+
+                • Máximo de
+                <strong>100 pessoas</strong>
+                em reservas por dia.
+
+                <br>
+
+                • Reservas para datas passadas
+                são bloqueadas.
+
+                <br>
+
+                • Cancelamentos podem ser feitos
+                somente com
+                <strong>48 horas de antecedência.</strong>
+
+                <br>
+
+                • Após o cancelamento, a reserva sai da lista e
+                <strong>libera a capacidade para novas reservas.</strong>
+
+                <br>
+
+                • As reservas ficam salvas
+                neste navegador.
+
+            </div>
+
+        </section>
+
+    </main>
+
+</section>
+
+<!-- ==============================
+     PÁGINA DE RESERVAS CONFIRMADAS
+============================== -->
+
+<section id="paginaConfirmadas" class="pagina">
+
+    <main class="container-reservas">
+
+        <section class="card">
+
+            <h2> Reservas Confirmadas</h2>
+
+            <div id="contador" class="contador">
+                Carregando reservas...
+            </div>
+
+            <div id="listaReservas"></div>
+
+        </section>
+
+        <section class="card">
+
+            <h2> Avisos dos Clientes</h2>
+
+            <div id="listaAvisos"></div>
+
+        </section>
+
+    </main>
+
+</section>
+
+<footer>
+    © 2026 Reino do Dragão • Todos os direitos reservados
+</footer>
+
+<script>
+
+/* ==================================================
+   CONFIGURAÇÕES
+================================================== */
+
+const LIMITE_RESERVA = 30;
+const LIMITE_DIA = 48;
+
+const CHAVE_RESERVAS = "reservasReinoDragoes";
+const CHAVE_AVISOS = "avisosReinoDragoes";
+
+
+/* ==================================================
+   ELEMENTOS
+================================================== */
+
+const form = document.getElementById("formReserva");
+const campoData = document.getElementById("data");
+const mensagem = document.getElementById("mensagem");
+
+const listaReservas =
+    document.getElementById("listaReservas");
+
+const listaAvisos =
+    document.getElementById("listaAvisos");
+
+const contador =
+    document.getElementById("contador");
+
+
+/* ==================================================
+   BANCO LOCAL
+================================================== */
+
+function limparReservasCanceladas() {
+
+    const reservas = obterReservas();
+
+    const ativas = reservas.filter(function(reserva) {
+        return reserva.status !== "Cancelada";
+    });
+
+    if (ativas.length !== reservas.length) {
+        localStorage.setItem(
+            CHAVE_RESERVAS,
+            JSON.stringify(ativas)
+        );
+    }
+}
+
+
+function obterReservas() {
+
+    try {
+
+        return JSON.parse(
+            localStorage.getItem(CHAVE_RESERVAS)
+        ) || [];
+
+    } catch (erro) {
+
+        return [];
+
+    }
+
+}
+
+function obterAvisos() {
+
+    try {
+
+        return JSON.parse(
+            localStorage.getItem(CHAVE_AVISOS)
+        ) || [];
+
+    } catch (erro) {
+
+        return [];
+
+    }
+
+}
+
+function salvarDados(reservas, avisos) {
+
+    localStorage.setItem(
+        CHAVE_RESERVAS,
+        JSON.stringify(reservas)
+    );
+
+    localStorage.setItem(
+        CHAVE_AVISOS,
+        JSON.stringify(avisos)
+    );
+
+}
+
+
+/* ==================================================
+   DATA DE HOJE
+================================================== */
+
+function dataHoje() {
+
+    const hoje = new Date();
+
+    const ano = hoje.getFullYear();
+
+    const mes = String(
+        hoje.getMonth() + 1
+    ).padStart(2, "0");
+
+    const dia = String(
+        hoje.getDate()
+    ).padStart(2, "0");
+
+    return `${ano}-${mes}-${dia}`;
+
+}
+
+campoData.min = dataHoje();
+
+
+/* ==================================================
+   FORMATAÇÃO
+================================================== */
+
+function formatarData(data) {
+
+    const partes = data.split("-");
+
+    return `${partes[2]}/${partes[1]}/${partes[0]}`;
+
+}
+
+function formatarDataHora(valor) {
+
+    return new Date(valor).toLocaleString(
+        "pt-BR"
+    );
+
+}
+
+function escapar(texto) {
+
+    return String(texto)
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;")
+        .replaceAll("'", "&#039;");
+
+}
+
+
+/* ==================================================
+   MENSAGEM
+================================================== */
+
+function mostrarMensagem(texto, tipo) {
+
+    mensagem.textContent = texto;
+
+    mensagem.className =
+        "mensagem " + tipo;
+
+    setTimeout(function() {
+
+        mensagem.className = "mensagem";
+
+    }, 5000);
+
+}
+
+
+/* ==================================================
+   NAVEGAÇÃO ENTRE AS DUAS PÁGINAS
+================================================== */
+
+function mostrarPagina(pagina) {
+
+    const paginaReserva =
+        document.getElementById("paginaReserva");
+
+    const paginaConfirmadas =
+        document.getElementById("paginaConfirmadas");
+
+    const btnReserva =
+        document.getElementById("btnReserva");
+
+    const btnConfirmadas =
+        document.getElementById("btnConfirmadas");
+
+
+    paginaReserva.classList.remove("ativa");
+    paginaConfirmadas.classList.remove("ativa");
+
+    btnReserva.classList.remove("ativo");
+    btnConfirmadas.classList.remove("ativo");
+
+
+    if (pagina === "reserva") {
+
+        paginaReserva.classList.add("ativa");
+        btnReserva.classList.add("ativo");
+
+    } else {
+
+        paginaConfirmadas.classList.add("ativa");
+        btnConfirmadas.classList.add("ativo");
+
+        mostrarReservas();
+        mostrarAvisos();
+
+    }
+
+}
+
+
+/* ==================================================
+   CRIAR RESERVA
+================================================== */
+
+form.addEventListener("submit", function(event) {
+
+    event.preventDefault();
+
+
+    const nome =
+        document.getElementById("nome")
+        .value
+        .trim();
+
+
+    const email =
+        document.getElementById("email")
+        .value
+        .trim();
+
+
+    const telefone =
+        document.getElementById("telefone")
+        .value
+        .trim();
+
+
+    const data =
+        document.getElementById("data")
+        .value;
+const pessoas =
+        Number(
+            document.getElementById("pessoas")
+            .value
+        );
+
+
+    /* VALIDAÇÕES */
+
+    if (nome.length < 3) {
+
+        mostrarMensagem(
+            "Informe um nome válido.",
+            "erro"
+        );
+
+        return;
+
+    }
+
+
+    if (!/^[^\s@]+@gmail\.com$/i.test(email)) {
+
+        mostrarMensagem(
+            "Informe um Gmail válido (ex.: nome@gmail.com).",
+            "erro"
+        );
+
+        return;
+
+    }
+
+
+    if (!telefone) {
+
+        mostrarMensagem(
+            "Informe o telefone.",
+            "erro"
+        );
+
+        return;
+
+    }
+if (data < dataHoje()) {
+
+        mostrarMensagem(
+            "Não é possível reservar datas passadas.",
+            "erro"
+        );
+
+        return;
+
+    }
+
+
+    if (
+        pessoas < 1 ||
+        pessoas > LIMITE_RESERVA
+    ) {
+
+        mostrarMensagem(
+            "O máximo permitido é 30 pessoas por reserva.",
+            "erro"
+        );
+
+        return;
+
+    }
+
+
+    const dataHora =
+        new Date(`${data}T23:59:59`);
+
+
+    if (dataHora <= new Date()) {
+
+        mostrarMensagem(
+            "Escolha um horário futuro.",
+            "erro"
+        );
+
+        return;
+
+    }
+
+
+    /* LIMITE DIÁRIO */
+
+    const reservas = obterReservas();
+
+    const totalNoDia =
+        reservas
+        .filter(function(reserva) {
+
+            return (
+                reserva.data === data &&
+                reserva.status === "Confirmada"
+            );
+
+        })
+        .reduce(function(total, reserva) {
+
+            return total +
+                Number(reserva.pessoas);
+
+        }, 0);
+
+
+    if (
+        totalNoDia + pessoas >
+        LIMITE_DIA
+    ) {
+
+        mostrarMensagem(
+            "⚠ O limite de 48 pessoas para este dia foi atingido.",
+            "erro"
+        );
+
+        return;
+
+    }
+
+
+    /* CHAVE PRIMÁRIA: GMAIL/EMAIL */
+
+    const gmailExistente = reservas.some(function(reserva) {
+        return String(reserva.gmail || reserva.email).toLowerCase() === email.toLowerCase()
+            && reserva.status === "Confirmada";
+    });
+
+    if (gmailExistente) {
+        mostrarMensagem(
+            "Este Gmail já possui uma reserva confirmada.",
+            "erro"
+        );
+        return;
+    }
+
+
+    /* CRIA RESERVA */
+
+    const id = Date.now();
+
+    const reserva = {
+
+        id: id,
+
+        nome: nome,
+
+        gmail: email,
+        email: email,
+
+        telefone: telefone,
+
+        data: data,
+
+        pessoas: pessoas,
+
+        status: "Confirmada",
+
+        criadaEm:
+            new Date().toISOString()
+
+    };
+
+
+    reservas.push(reserva);
+
+
+    /* CRIA AVISO */
+
+    const avisos = obterAvisos();
+
+    const aviso = {
+
+        id:
+            Date.now() + 1,
+
+        reservaId:
+            id,
+
+        nome:
+            nome,
+
+        email:
+            email,
+        gmail:
+            email,
+
+        tipo:
+            "CONFIRMAÇÃO",
+
+        mensagem:
+            ` Olá ${nome}! Sua reserva foi confirmada para ${formatarData(data)} com ${pessoas} pessoa(s).`,
+
+        data:
+            new Date().toISOString()
+
+    };
+
+
+    avisos.push(aviso);
+
+    salvarDados(
+        reservas,
+        avisos
+    );
+
+
+    form.reset();
+
+    campoData.min =
+        dataHoje();
+
+
+    mostrarMensagem(
+        " Reserva confirmada com sucesso!",
+        "sucesso"
+    );
+
+
+    /* Atualiza a outra área caso o usuário vá para ela */
+    mostrarReservas();
+    mostrarAvisos();
+
+});
+
+
+/* ==================================================
+   MOSTRAR RESERVAS
+================================================== */
+
+function mostrarReservas() {
+
+    const reservas =
+        obterReservas();
+
+
+    listaReservas.innerHTML = "";
+
+
+    const confirmadas =
+        reservas.filter(function(reserva) {
+
+            return reserva.status === "Confirmada";
+
+        });
+
+
+    contador.innerHTML =
+        ` <strong>${confirmadas.length}</strong> reserva(s) confirmada(s)`;
+
+
+    if (confirmadas.length === 0) {
+
+        listaReservas.innerHTML =
+            '<p class="vazio">Nenhuma reserva confirmada.</p>';
+
+        return;
+
+    }
+
+
+    confirmadas
+        .slice()
+        .sort(function(a, b) {
+
+            return new Date(
+                `${a.data}T${a.horario}`
+            ) -
+            new Date(
+                `${b.data}T${b.horario}`
+            );
+
+        })
+        .forEach(adicionarReserva);
+
+}
+
+
+/* ==================================================
+   ADICIONAR RESERVA NA TELA
+================================================== */
+
+function adicionarReserva(reserva) {
+
+    const card =
+        document.createElement("div");
+
+
+    card.className =
+        "cardReserva";
+
+
+    let botoes = "";
+
+
+    if (
+        reserva.status ===
+        "Confirmada"
+    ) {
+
+        if (podeCancelar(reserva)) {
+
+            botoes = `
+                <button
+                    class="btnCancelar"
+                    onclick="cancelarReserva(${reserva.id})"
+                >
+                    ❌ Cancelar Reserva
+                </button>
+            `;
+
+        } else {
+
+            botoes = `
+                <p class="status">
+                    ⚠ O cancelamento está bloqueado.
+                    <br>
+                    É necessário cancelar com pelo menos
+                    48 horas de antecedência.
+                </p>
+            `;
+
+        }
+
+    }
+
+
+    card.innerHTML = `
+
+        <h3>
+             ${escapar(reserva.nome)}
+        </h3>
+
+        <p>
+            <strong> Email:</strong>
+            ${escapar(reserva.email)}
+        </p>
+
+        <p>
+            <strong> Telefone:</strong>
+            ${escapar(reserva.telefone)}
+        </p>
+
+    
+
+        <p>
+            <strong> Pessoas:</strong>
+            ${reserva.pessoas}
+        </p>
+
+        <p class="status">
+            <strong>⚔ Status:</strong>
+            ${escapar(reserva.status)}
+        </p>
+
+        ${botoes}
+
+    `;
+
+
+    listaReservas.appendChild(card);
+
+}
+
+
+/* ==================================================
+   VERIFICAR 48 HORAS
+================================================== */
+
+function podeCancelar(reserva) {
+
+    const dataReserva =
+        new Date(
+            `${reserva.data}T${reserva.horario}`
+        );
+
+
+    const agora =
+        new Date();
+
+
+    const diferenca =
+        dataReserva - agora;
+
+
+    const horas =
+        diferenca / (1000 * 60 * 60);
+
+
+    return horas >= 48;
+
+}
+
+
+/* ==================================================
+   CANCELAR RESERVA
+================================================== */
+
+function cancelarReserva(id) {
+
+    const reservas = obterReservas();
+    const avisos = obterAvisos();
+
+    // Só permite cancelar uma reserva que ainda esteja ativa.
+    const reserva = reservas.find(function(item) {
+        return String(item.id) === String(id) &&
+               item.status === "Confirmada";
+    });
+
+    if (!reserva) {
+        alert("Esta reserva já foi cancelada ou não foi encontrada.");
+        return;
+    }
+
+    // Mantém a regra das 48 horas.
+    if (!podeCancelar(reserva)) {
+        alert(
+            "❌ O cancelamento só é permitido com 48 horas ou mais de antecedência."
+        );
+        return;
+    }
+
+    const confirmar = confirm(
+        `Deseja cancelar a reserva de ${reserva.nome}?`
+    );
+
+    if (!confirmar) {
+        return;
+    }
+
+    // Cria o aviso antes de remover a reserva.
+    const dataCancelamento = new Date().toISOString();
+
+    avisos.push({
+        id: Date.now(),
+        reservaId: reserva.id,
+        nome: reserva.nome,
+        email: reserva.email,
+        gmail: reserva.gmail || reserva.email,
+        tipo: "CANCELAMENTO",
+        mensagem:
+            `A reserva de ${reserva.nome}, marcada para ${formatarData(
+                reserva.data
+            )}, foi cancelada com sucesso.`,
+        data: dataCancelamento
+    });
+
+    /*
+       Remove definitivamente a reserva ativa.
+       Assim:
+       - ela desaparece da lista;
+       - deixa de ocupar a capacidade do dia;
+       - o Gmail fica disponível para uma nova reserva.
+    */
+    const reservasAtualizadas = reservas.filter(function(item) {
+        return String(item.id) !== String(reserva.id);
+    });
+
+    salvarDados(reservasAtualizadas, avisos);
+
+    mostrarReservas();
+    mostrarAvisos();
+
+    mostrarMensagem(
+        "✅ Reserva cancelada. O Gmail já pode ser usado novamente.",
+        "sucesso"
+    );
+}
+
+
+function mostrarAvisos() {
+
+    const avisos =
+        obterAvisos();
+
+
+    listaAvisos.innerHTML =
+        "";
+
+
+    if (avisos.length === 0) {
+
+        listaAvisos.innerHTML =
+            '<p class="vazio">Nenhum aviso novo.</p>';
+
+        return;
+
+    }
+
+
+    avisos
+        .slice()
+        .reverse()
+        .forEach(function(aviso) {
+
+            const elemento =
+                document.createElement("div");
+
+
+            elemento.className =
+                "aviso";
+
+
+            elemento.innerHTML = `
+
+                <h3>
+                    🔔 ${escapar(aviso.tipo)}
+                </h3>
+
+                <p>
+                    ${escapar(aviso.mensagem)}
+                </p>
+
+                <p>
+                    <strong>📅 Aviso:</strong>
+                    ${formatarDataHora(aviso.data)}
+                </p>
+
+            `;
+
+
+            listaAvisos.appendChild(
+                elemento
+            );
+
+        });
+
+}
+
+
+/* ==================================================
+   SINCRONIZAÇÃO
+================================================== */
+
+/*
+   Se outra aba do MESMO arquivo estiver aberta,
+   as alterações do localStorage são percebidas.
+*/
+
+window.addEventListener(
+    "storage",
+    function(event) {
+
+        if (
+            event.key === CHAVE_RESERVAS ||
+            event.key === CHAVE_AVISOS
+        ) {
+
+            mostrarReservas();
+            mostrarAvisos();
+
+        }
+
+    }
+);
+
+
+/* ==================================================
+   INICIALIZAÇÃO
+================================================== */
+
+limparReservasCanceladas();
+limparAvisosAntigos();
+mostrarReservas();
+mostrarAvisos();
+
+</script>
+
+</body>
+</html>
