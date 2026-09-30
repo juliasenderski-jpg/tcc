@@ -1,0 +1,749 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+<title>Reino dos Dragões| Restaurante tematico</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=MedievalSharp&family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+
+<style>
+
+/* RESET */
+
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+}
+
+/* BODY */
+
+body{
+
+    font-family:'Poppins', sans-serif;
+
+    min-height:100vh;
+
+    color:#f5e6c8;
+
+    overflow-x:hidden;
+
+    position:relative;
+
+    background:
+    
+    linear-gradient(rgba(0,0,0,0.88), rgba(10,0,0,0.94)),
+
+    url("https://static.wikia.nocookie.net/rpg-rise-of-the-titans/images/6/6e/DragonRed.jpg/revision/latest/scale-to-width-down/500?cb=20190222000049&path-prefix=pt-br");
+
+    background-size:cover;
+
+    background-position:center;
+
+    background-attachment:fixed;
+}
+
+/* NÉVOA + FOGO */
+
+body::before{
+
+    content:"";
+
+    position:fixed;
+
+    inset:0;
+
+    background:
+
+    radial-gradient(circle at top left,
+    rgba(255,0,0,0.18),
+    transparent 30%),
+
+
+    radial-gradient(circle at bottom right,
+    rgba(255,120,0,0.15),
+    transparent 35%),
+
+
+    radial-gradient(circle at center,
+    rgba(255,255,255,0.03),
+    transparent 45%);
+
+    z-index:0;
+
+    pointer-events:none;
+}
+
+/* DRAGÕES */
+
+.dragon{
+
+    position:fixed;
+
+    opacity:0.10;
+
+    z-index:0;
+
+    pointer-events:none;
+
+    filter:drop-shadow(0 0 25px rgba(255,0,0,0.7));
+}
+
+.dragon1{
+
+    width:400px;
+
+    top:80px;
+
+    left:-80px;
+
+    animation:voar1 8s infinite ease-in-out;
+}
+
+.dragon2{
+
+    width:360px;
+
+    bottom:40px;
+
+    right:-60px;
+
+    transform:scaleX(-1);
+
+    animation:voar2 10s infinite ease-in-out;
+}
+
+.dragon3{
+
+    width:260px;
+
+    top:45%;
+
+    left:38%;
+
+    opacity:0.05;
+
+    animation:girar 20s linear infinite;
+}
+
+/* ANIMAÇÕES */
+
+@keyframes voar1{
+
+    0%{
+        transform:translateY(0px);
+    }
+
+    50%{
+        transform:translateY(-25px);
+    }
+
+    100%{
+        transform:translateY(0px);
+    }
+}
+
+@keyframes voar2{
+
+    0%{
+        transform:scaleX(-1) translateY(0px);
+    }
+
+    50%{
+        transform:scaleX(-1) translateY(-20px);
+    }
+
+    100%{
+        transform:scaleX(-1) translateY(0px);
+    }
+}
+
+@keyframes girar{
+
+    from{
+        transform:rotate(0deg);
+    }
+
+    to{
+        transform:rotate(360deg);
+    }
+}
+
+/* HEADER */
+
+header{
+
+    position:relative;
+
+    z-index:2;
+
+    text-align:center;
+
+    padding:90px 20px;
+
+    background:rgba(15,5,0,0.82);
+
+    border-bottom:3px solid #8b0000;
+
+    box-shadow:0 0 40px rgba(255,0,0,0.25);
+}
+
+header h1{
+
+    font-family:'MedievalSharp', cursive;
+
+    font-size:85px;
+
+    color:#ffdf9d;
+
+    letter-spacing:6px;
+
+    text-shadow:
+    0 0 10px #ff7b00,
+    0 0 20px #ff0000,
+    0 0 50px #8b0000;
+}
+
+header p{
+
+    margin-top:20px;
+
+    font-family:'Cinzel', serif;
+
+    letter-spacing:4px;
+
+    font-size:22px;
+
+    color:#f5d9b0;
+}
+
+/* CONTAINER */
+
+.container{
+
+    width:92%;
+
+    max-width:1450px;
+
+    margin:auto;
+
+    padding:50px 0;
+
+    display:grid;
+
+    grid-template-columns:1fr 1fr;
+
+    gap:35px;
+
+    position:relative;
+
+    z-index:2;
+}
+
+/* CARDS */
+
+.card{
+
+    background:rgba(18,12,8,0.92);
+
+    border:2px solid #7a1c00;
+
+    border-radius:24px;
+
+    padding:35px;
+
+    backdrop-filter:blur(10px);
+
+    box-shadow:
+    0 0 25px rgba(255,80,0,0.18),
+    inset 0 0 20px rgba(255,0,0,0.08);
+
+    transition:0.4s;
+}
+
+.card:hover{
+
+    transform:translateY(-5px);
+
+    box-shadow:
+    0 0 35px rgba(255,90,0,0.35),
+    inset 0 0 20px rgba(255,120,0,0.10);
+}
+
+/* TITULOS */
+
+h2{
+
+    font-family:'Cinzel', serif;
+
+    font-size:35px;
+
+    margin-bottom:28px;
+
+    color:#ffcf8b;
+
+    text-shadow:0 0 10px rgba(255,120,0,0.3);
+}
+
+/* FORM */
+
+label{
+
+    display:block;
+
+    margin-top:18px;
+
+    margin-bottom:8px;
+
+    font-weight:600;
+
+    color:#f1d5a7;
+}
+
+input{
+
+    width:100%;
+
+    padding:15px;
+
+    border-radius:12px;
+
+    border:1px solid #5c1b00;
+
+    background:#1b130f;
+
+    color:white;
+
+    font-size:15px;
+
+    outline:none;
+
+    transition:0.3s;
+}
+
+input:focus{
+
+    border:1px solid #ff6a00;
+
+    box-shadow:0 0 12px rgba(255,106,0,0.4);
+}
+
+/* BOTÃO */
+
+button{
+
+    width:100%;
+
+    margin-top:30px;
+
+    padding:18px;
+
+    border:none;
+
+    border-radius:14px;
+
+    background:linear-gradient(45deg,#7a1c00,#d43c00);
+
+    color:white;
+
+    font-size:18px;
+
+    font-weight:bold;
+
+    cursor:pointer;
+
+    transition:0.4s;
+
+    letter-spacing:1px;
+}
+
+button:hover{
+
+    transform:scale(1.03);
+
+    box-shadow:0 0 20px rgba(255,80,0,0.5);
+}
+
+/* INFO */
+
+.info{
+
+    margin-top:25px;
+
+    padding:18px;
+
+    border-radius:15px;
+
+    background:rgba(255,120,0,0.08);
+
+    border:1px solid rgba(255,120,0,0.2);
+
+    line-height:1.7;
+}
+
+/* RESERVAS */
+
+.cardReserva{
+
+    background:#1a120d;
+
+    border-left:5px solid #ff5e00;
+
+    padding:22px;
+
+    border-radius:18px;
+
+    margin-bottom:20px;
+
+    animation:aparecer 0.5s ease;
+
+    box-shadow:0 0 18px rgba(255,80,0,0.12);
+}
+
+.cardReserva h3{
+
+    margin-bottom:12px;
+
+    color:#ffd89c;
+
+    font-size:23px;
+}
+
+.cardReserva p{
+
+    margin:7px 0;
+}
+
+.status{
+
+    margin-top:12px;
+
+    color:#ff843d;
+
+    font-weight:bold;
+}
+
+/* ANIMAÇÃO */
+
+@keyframes aparecer{
+
+    from{
+
+        opacity:0;
+
+        transform:translateY(20px);
+    }
+
+    to{
+
+        opacity:1;
+
+        transform:translateY(0);
+    }
+}
+
+/* FOOTER */
+
+footer{
+
+    margin-top:50px;
+
+    padding:30px;
+
+    text-align:center;
+
+    background:rgba(0,0,0,0.82);
+
+    border-top:2px solid #6e1800;
+
+    color:#d6b98a;
+
+    position:relative;
+
+    z-index:2;
+}
+
+/* RESPONSIVO */
+
+@media(max-width:950px){
+
+    .container{
+
+        grid-template-columns:1fr;
+    }
+
+    header h1{
+
+        font-size:52px;
+    }
+
+    .dragon1,
+    .dragon2{
+
+        width:180px;
+    }
+
+    .dragon3{
+
+        display:none;
+    }
+}
+
+</style>
+</head>
+
+<body>
+
+<!-- DRAGÕES -->
+
+<img class="dragon dragon1"
+src="c:\Users\Amanda Larissa\Downloads\5bbc508a2bfa7-7f772c090cf027bebfc0d06b703344e1.png">
+
+<img class="dragon dragon2"
+src="c:\Users\Amanda Larissa\Downloads\—Pngtree—black dragon flying with spread_23358295.png">
+
+<img class="dragon dragon3"
+src="c:\Users\Amanda Larissa\Downloads\pngegg (1).png">
+
+<!-- HEADER -->
+
+<header>
+
+    <h1>Reino dos dragões</h1>
+
+    <p>⚔ Tome Cuidado Com o Fogo ⚔</p>
+
+</header>
+
+<!-- CONTEÚDO -->
+
+<main class="container">
+
+    <!-- FORM -->
+
+    <section class="card">
+
+        <h2>Reserva de Mesas</h2>
+
+        <form id="formReserva">
+
+            <label>Nome Completo</label>
+            <input type="text" id="nome" required>
+
+            <label>Email</label>
+            <input type="email" id="email" required>
+
+            <label>Telefone</label>
+            <input type="tel" id="telefone" required>
+
+            <label>Data da Reserva</label>
+            <input type="date" id="data" required>
+
+            <label>Quantidade de Pessoas</label>
+            <input type="number" id="pessoas" min="1" max="30" required>
+
+            <button type="submit">
+
+                🐉 Confirmar Reserva
+
+            </button>
+
+        </form>
+
+        <div class="info">
+
+            <strong>⚔ Regras do Reino:</strong><br><br>
+
+            • Máximo de <strong>30 pessoas</strong> por reserva.<br>
+            • Máximo de reservas do reino <strong>100 pessoas</strong> por dia.<br>
+            • Reservas excedentes serão bloqueadas automaticamente.
+            
+
+
+        </div>
+
+    </section>
+
+    <!-- RESERVAS -->
+
+    <section class="card">
+
+        <h2>Reservas Confirmadas</h2>
+
+        <div id="listaReservas"></div>
+
+    </section>
+
+</main>
+
+<!-- FOOTER -->
+
+<footer>
+
+    © 2026 Família do Dragão • Todos os direitos reservados
+
+</footer>
+
+<script>
+
+/* ELEMENTOS */
+
+const form = document.getElementById("formReserva");
+
+const listaReservas = document.getElementById("listaReservas");
+
+/* CONFIGURAÇÕES */
+
+const LIMITE_DIA = 100;
+
+const LIMITE_RESERVA = 30;
+
+let numeroMesa = 1;
+
+/* ARRAY */
+
+let reservas = [];
+
+/* RESERVA */
+
+form.addEventListener("submit", function(event){
+
+    event.preventDefault();
+
+    const nome = document.getElementById("nome").value.trim();
+
+    const email = document.getElementById("email").value.trim();
+
+    const telefone = document.getElementById("telefone").value.trim();
+
+    const data = document.getElementById("data").value;
+
+    const pessoas = Number(document.getElementById("pessoas").value);
+
+    /* DATA */
+
+    const hoje = new Date().toISOString().split("T")[0];
+
+    if(data < hoje){
+
+        alert("Não é possível reservar datas passadas.");
+
+        return;
+    }
+
+    /* LIMITE POR RESERVA */
+
+    if(pessoas > LIMITE_RESERVA){
+
+        alert("O máximo permitido é 30 pessoas por reserva.");
+
+        return;
+    }
+
+    /* TOTAL DO DIA */
+
+    const totalNoDia = reservas
+    .filter(r => r.data === data)
+    .reduce((total, r) => total + r.pessoas, 0);
+
+    if((totalNoDia + pessoas) > LIMITE_DIA){
+
+        alert("⚠ O limite de 100 pessoas para este dia foi atingido.");
+
+        return;
+    }
+
+    /* RESERVA */
+
+    const reserva = {
+
+        nome,
+        email,
+        telefone,
+        data,
+        pessoas,
+        mesa:numeroMesa,
+        status:"Confirmada"
+
+    };
+
+    reservas.push(reserva);
+
+    adicionarReserva(reserva);
+
+    enviarLembrete(nome, email);
+
+    numeroMesa++;
+
+    form.reset();
+
+    alert("🐉 Reserva confirmada com sucesso!");
+
+});
+
+/* MOSTRAR */
+
+function adicionarReserva(reserva){
+
+    const card = document.createElement("div");
+
+    card.classList.add("cardReserva");
+
+    card.innerHTML = `
+
+        <h3>🐉 ${reserva.nome}</h3>
+
+        <p><strong>📧 Email:</strong> ${reserva.email}</p>
+
+        <p><strong>📱 Telefone:</strong> ${reserva.telefone}</p>
+
+        <p><strong>📅 Data:</strong> ${formatarData(reserva.data)}</p>
+
+        <p><strong>👥 Pessoas:</strong> ${reserva.pessoas}</p>
+
+        <p><strong>🍖 Mesa:</strong> ${reserva.mesa}</p>
+
+        <p class="status">
+
+            ⚔ Status: ${reserva.status}
+
+        </p>
+
+    `;
+
+    listaReservas.prepend(card);
+
+}
+
+/* FORMATAR DATA */
+
+function formatarData(data){
+
+    const partes = data.split("-");
+
+    return `${partes[2]}/${partes[1]}/${partes[0]}`;
+}
+
+/* LEMBRETE */
+
+function enviarLembrete(nome, email){
+
+    console.log(`
+
+🐉 Lembrete enviado com sucesso!
+
+Cliente: ${nome}
+
+Email: ${email}
+
+`);
+
+}
+
+</script>
+
+</body>
+</html>
