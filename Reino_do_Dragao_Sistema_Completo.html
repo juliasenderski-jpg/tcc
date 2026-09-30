@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Reino do Dragão | Sistema de Reservas</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=MedievalSharp&family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+<img class="dragon dragon1"
+src="https://pngimg.com/uploads/dragon/dragon_PNG8455.png"
+alt="">
+
+<img class="dragon dragon2"
+src="https://pngimg.com/uploads/dragon/dragon_PNG8456.png"
+alt="">
+
+<header>
+    <h1>Reino do Dragão</h1>
+    <p>⚔ Tome Cuidado Com o Fogo ⚔</p>
+</header>
+
+<!--
+    AS DUAS PÁGINAS ESTÃO NO MESMO ARQUIVO.
+    O JavaScript alterna entre elas.
+-->
+<nav class="navegacao">
+    <button id="btnReserva" class="ativo" onclick="mostrarPagina('reserva')">
+         Fazer Reserva
+    </button>
+
+    <button id="btnConfirmadas" onclick="mostrarPagina('confirmadas')">
+         Reservas Confirmadas
+    </button>
+    <button id="btnFuncionarios" onclick="window.location.href='Painel_Funcionarios_Reino_do_Dragao.html'">
+          Área dos Funcionários
+    </button>
+</nav>
+
+<!-- ==============================
+     PÁGINA DE RESERVA
+============================== -->
+
+<section id="paginaReserva" class="pagina ativa">
+
+    <main class="container-reserva">
+
+        <section class="card">
+
+            <h2>Reserva de Mesas</h2>
+
+            <form id="formReserva">
+
+                <label for="nome">Nome Completo</label>
+                <input type="text" id="nome" required>
+
+                <label for="email">Email</label>
+                <input type="email" id="email" required>
+
+                <label for="telefone">Telefone</label>
+                <input type="tel" id="telefone" required>
+
+                <label for="data">Data da Reserva</label>
+                <input type="date" id="data" required>
+<label for="pessoas">Quantidade de Pessoas</label>
+                <input
+                    type="number"
+                    id="pessoas"
+                    min="1"
+                    max="30"
+                    required
+                >
+
+                <button type="submit">
+                     Confirmar Reserva
+                </button>
+
+            </form>
+
+            <div id="mensagem" class="mensagem"></div>
+
+            <div class="info">
+
+                <strong>⚔ Regras do Reino:</strong>
+
+                <br><br>
+
+                • Máximo de
+                <strong>30 pessoas</strong>
+                por reserva.
+
+                <br>
+
+                • Máximo de
+                <strong>100 pessoas</strong>
+                em reservas por dia.
+
+                <br>
+
+                • Reservas para datas passadas
+                são bloqueadas.
+
+                <br>
+
+                • Cancelamentos podem ser feitos
+                somente com
+                <strong>48 horas de antecedência.</strong>
+
+                <br>
+
+                • Após o cancelamento, a reserva sai da lista e
+                <strong>libera a capacidade para novas reservas.</strong>
+
+                <br>
+
+                • As reservas ficam salvas
+                neste navegador.
+
+            </div>
+
+        </section>
+
+    </main>
+
+</section>
+
+<!-- ==============================
+     PÁGINA DE RESERVAS CONFIRMADAS
+============================== -->
+
+<section id="paginaConfirmadas" class="pagina">
+
+    <main class="container-reservas">
+
+        <section class="card">
+
+            <h2> Reservas Confirmadas</h2>
+
+            <div id="contador" class="contador">
+                Carregando reservas...
+            </div>
+
+            <div id="listaReservas"></div>
+
+        </section>
+
+        <section class="card">
+
+            <h2> Avisos dos Clientes</h2>
+
+            <div id="listaAvisos"></div>
+
+        </section>
+
+    </main>
+
+</section>
+
+
+<!-- ==============================
+     ÁREA DOS FUNCIONÁRIOS
+============================== -->
+
+<section id="paginaFuncionarios" class="pagina">
+    <main class="container-reservas">
+        <section class="card">
+            <div class="painel-topo">
+                <div>
+                    <h2> Painel dos Funcionários</h2>
+                    <p class="subtitulo-painel">
+                        Central de recebimento e acompanhamento das reservas do Reino do Dragão.
+                    </p>
+                </div>
+                <button class="btn-secundario" onclick="atualizarPainelFuncionarios()">
+                     Atualizar
+                </button>
+            </div>
+
+            <div class="indicadores">
+                <div class="indicador">
+                    <span>Reservas ativas</span>
+                    <strong id="totalAtivasFuncionario">0</strong>
+                </div>
+                <div class="indicador">
+                    <span>Pessoas reservadas</span>
+                    <strong id="totalPessoasFuncionario">0</strong>
+                </div>
+                <div class="indicador">
+                    <span>Capacidade para reservas</span>
+                    <strong>48</strong>
+                </div>
+                <div class="indicador">
+                    <span>Cancelamentos registrados</span>
+                    <strong id="totalCancelamentosFuncionario">0</strong>
+                </div>
+            </div>
+        </section>
+
+        <section class="card">
+            <h2> Reservas Recebidas</h2>
+
+            <div class="filtros-funcionario">
+                <div>
+                    <label for="filtroDataFuncionario">Filtrar por data</label>
+                    <input type="date" id="filtroDataFuncionario" onchange="atualizarPainelFuncionarios()">
+                </div>
+
+                <div>
+                    <label for="filtroNomeFuncionario">Pesquisar cliente</label>
+                    <input
+                        type="search"
+                        id="filtroNomeFuncionario"
+                        placeholder="Nome ou Gmail"
+                        oninput="atualizarPainelFuncionarios()"
+                    >
+                </div>
+
+                <button class="btn-secundario" onclick="limparFiltrosFuncionario()">
+                    Limpar filtros
+                </button>
+            </div>
+
+            <div id="listaReservasFuncionarios"></div>
+        </section>
+
+        <section class="card">
+            <h2>🔔 Notificações</h2>
+            <p class="subtitulo-painel">
+                Confirmações e cancelamentos ficam registrados aqui para os funcionários acompanharem as movimentações.
+            </p>
+            <div id="listaAvisosFuncionarios"></div>
+        </section>
+    </main>
+</section>
+
+<footer>
+    © 2026 Reino do Dragão • Todos os direitos reservados
+</footer>
+
+<script src="script.js"></script>
+
+</body>
+</html>
