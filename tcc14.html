@@ -1,0 +1,36 @@
+<main class="container">
+<section class="card">
+<div class="topo">
+<div>
+<h2>Central de Reservas</h2>
+<p class="sub">As reservas feitas na página dos clientes aparecem automaticamente aqui.</p>
+</div>
+<div class="acoes">
+<button onclick="atualizar()"> Atualizar</button>
+<button onclick="window.location.href='Reino_do_Dragao_Sistema_Completo.html'">⚔ Página do Cliente</button>
+</div>
+</div>
+
+<div class="indicadores">
+<div class="indicador"><span>Reservas ativas</span><strong id="ativas">0</strong></div>
+<div class="indicador"><span>Pessoas reservadas</span><strong id="pessoas">0</strong></div>
+<div class="indicador"><span>Limite diário</span><strong>48</strong></div>
+<div class="indicador"><span>Cancelamentos</span><strong id="cancelamentos">0</strong></div>
+</div>
+</section>
+
+<section class="card">
+<h2>Reservas Recebidas</h2>
+<div class="filtros">
+<div><label>Data</label><input type="date" id="fData" onchange="atualizar()"></div>
+<div><label>Cliente ou Gmail</label><input type="search" id="fNome" placeholder="Pesquisar..." oninput="atualizar()"></div>
+<button onclick="limpar()">Limpar filtros</button>
+</div>
+<div id="reservas"></div>
+</section>
+
+<section class="card">
+<h2> Notificações</h2>
+<div id="avisos"></div>
+</section>
+</main>
