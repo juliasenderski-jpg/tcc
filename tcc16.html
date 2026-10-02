@@ -1713,3 +1713,25 @@ function cancelarReserva(id) {
             )}, foi cancelada com sucesso.`,
         data: dataCancelamento
     });
+
+    /*
+       Remove definitivamente a reserva ativa.
+       Assim:
+       - ela desaparece da lista;
+       - deixa de ocupar a capacidade do dia;
+       - o Gmail fica disponível para uma nova reserva.
+    */
+    const reservasAtualizadas = reservas.filter(function(item) {
+        return String(item.id) !== String(reserva.id);
+    });
+
+    salvarDados(reservasAtualizadas, avisos);
+
+    mostrarReservas();
+    mostrarAvisos();
+
+    mostrarMensagem(
+        "✅ Reserva cancelada. O Gmail já pode ser usado novamente.",
+        "sucesso"
+    );
+}
