@@ -199,3 +199,22 @@ alt="">
                 </div>
             </div>
         </section>
+
+        <section class="card">
+            <h2> Reservas Recebidas</h2>
+
+            <div class="filtros-funcionario">
+                <div>
+                    <label for="filtroDataFuncionario">Filtrar por data</label>
+                    <input type="date" id="filtroDataFuncionario" onchange="atualizarPainelFuncionarios()">
+                </div>
+
+                <div>
+                    <label for="filtroNomeFuncionario">Pesquisar cliente</label>
+                    <input
+                        type="search"
+                        id="filtroNomeFuncionario"
+                        placeholder="Nome ou Gmail"
+                        oninput="atualizarPainelFuncionarios()"
+                    >
+                </div>
