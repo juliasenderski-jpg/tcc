@@ -87,3 +87,43 @@ button:hover{box-shadow:0 0 18px rgba(255,80,0,.4)}
 <div id="avisos"></div>
 </section>
 </main>
+
+<script>
+const CHAVE_RESERVAS = "reservasReinoDragoes";
+const CHAVE_AVISOS = "avisosReinoDragoes";
+
+function reservas(){
+    try{return JSON.parse(localStorage.getItem(CHAVE_RESERVAS))||[]}
+    catch(e){return []}
+}
+function avisos(){
+    try{return JSON.parse(localStorage.getItem(CHAVE_AVISOS))||[]}
+    catch(e){return []}
+}
+function escapar(t){
+    return String(t??"").replaceAll("&","&amp;").replaceAll("<","&lt;")
+      .replaceAll(">","&gt;").replaceAll('"',"&quot;").replaceAll("'","&#039;");
+}
+function dataBR(d){
+    if(!d)return "";
+    const p=d.split("-");
+    return p.length===3 ? p[2]+"/"+p[1]+"/"+p[0] : d;
+}
+function dataHora(v){
+    return v ? new Date(v).toLocaleString("pt-BR") : "";
+}
+function atualizar(){
+    const filtroData=document.getElementById("fData").value;
+    const filtroNome=document.getElementById("fNome").value.trim().toLowerCase();
+
+    const todas=reservas().filter(r=>r.status==="Confirmada");
+    const lista=todas.filter(r=>{
+        if(filtroData && r.data!==filtroData)return false;
+        const n=String(r.nome||"").toLowerCase();
+        const g=String(r.gmail||r.email||"").toLowerCase();
+        return !filtroNome || n.includes(filtroNome) || g.includes(filtroNome);
+    }).sort((a,b)=>new Date(a.data)-new Date(b.data));
+
+    document.getElementById("ativas").textContent=todas.length;
+    document.getElementById("pessoas").textContent=todas.reduce((s,r)=>s+Number(r.pessoas||0),0);
+    document.getElementById("cancelamentos").textContent=avisos().filter(a=>a.tipo==="CANCELAMENTO").length;
