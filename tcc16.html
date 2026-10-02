@@ -1659,3 +1659,32 @@ function podeCancelar(reserva) {
     return horas >= 48;
 
 }
+
+
+/* ==================================================
+   CANCELAR RESERVA
+================================================== */
+
+function cancelarReserva(id) {
+
+    const reservas = obterReservas();
+    const avisos = obterAvisos();
+
+    // Só permite cancelar uma reserva que ainda esteja ativa.
+    const reserva = reservas.find(function(item) {
+        return String(item.id) === String(id) &&
+               item.status === "Confirmada";
+    });
+
+    if (!reserva) {
+        alert("Esta reserva já foi cancelada ou não foi encontrada.");
+        return;
+    }
+
+    // Mantém a regra das 48 horas.
+    if (!podeCancelar(reserva)) {
+        alert(
+            "❌ O cancelamento só é permitido com 48 horas ou mais de antecedência."
+        );
+        return;
+    }
