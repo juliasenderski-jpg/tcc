@@ -1371,3 +1371,34 @@ if (data < dataHoje()) {
                 Number(reserva.pessoas);
 
         }, 0);
+
+
+    if (
+        totalNoDia + pessoas >
+        LIMITE_DIA
+    ) {
+
+        mostrarMensagem(
+            "⚠ O limite de 48 pessoas para este dia foi atingido.",
+            "erro"
+        );
+
+        return;
+
+    }
+
+
+    /* CHAVE PRIMÁRIA: GMAIL/EMAIL */
+
+    const gmailExistente = reservas.some(function(reserva) {
+        return String(reserva.gmail || reserva.email).toLowerCase() === email.toLowerCase()
+            && reserva.status === "Confirmada";
+    });
+
+    if (gmailExistente) {
+        mostrarMensagem(
+            "Este Gmail já possui uma reserva confirmada.",
+            "erro"
+        );
+        return;
+    }
