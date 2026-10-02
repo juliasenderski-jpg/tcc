@@ -1270,3 +1270,29 @@ const pessoas =
             document.getElementById("pessoas")
             .value
         );
+
+
+    /* VALIDAÇÕES */
+
+    if (nome.length < 3) {
+
+        mostrarMensagem(
+            "Informe um nome válido.",
+            "erro"
+        );
+
+        return;
+
+    }
+
+
+    if (!/^[^\s@]+@gmail\.com$/i.test(email)) {
+
+        mostrarMensagem(
+            "Informe um Gmail válido (ex.: nome@gmail.com).",
+            "erro"
+        );
+
+        return;
+
+    }
