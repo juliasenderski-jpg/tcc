@@ -23,3 +23,20 @@ alt="">
     <h1>Reino do Dragão</h1>
     <p>⚔ Tome Cuidado Com o Fogo ⚔</p>
 </header>
+
+<!--
+    AS DUAS PÁGINAS ESTÃO NO MESMO ARQUIVO.
+    O JavaScript alterna entre elas.
+-->
+<nav class="navegacao">
+    <button id="btnReserva" class="ativo" onclick="mostrarPagina('reserva')">
+         Fazer Reserva
+    </button>
+
+    <button id="btnConfirmadas" onclick="mostrarPagina('confirmadas')">
+         Reservas Confirmadas
+    </button>
+    <button id="btnFuncionarios" onclick="window.location.href='Painel_Funcionarios_Reino_do_Dragao.html'">
+          Área dos Funcionários
+    </button>
+</nav>
