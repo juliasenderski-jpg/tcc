@@ -1755,3 +1755,41 @@ function mostrarAvisos() {
         return;
 
     }
+
+
+    avisos
+        .slice()
+        .reverse()
+        .forEach(function(aviso) {
+
+            const elemento =
+                document.createElement("div");
+
+
+            elemento.className =
+                "aviso";
+
+
+            elemento.innerHTML = `
+
+                <h3>
+                    🔔 ${escapar(aviso.tipo)}
+                </h3>
+
+                <p>
+                    ${escapar(aviso.mensagem)}
+                </p>
+
+                <p>
+                    <strong>📅 Aviso:</strong>
+                    ${formatarDataHora(aviso.data)}
+                </p>
+
+            `;
+
+
+            listaAvisos.appendChild(
+                elemento
+            );
+
+        });
