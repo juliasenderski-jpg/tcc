@@ -814,3 +814,80 @@ footer {
     font-size: 15px;
     padding: 12px;
 }
+
+.aviso {
+    background: rgba(255,120,0,0.08);
+    border-left: 5px solid #ff6a00;
+    padding: 18px;
+    border-radius: 12px;
+    margin-bottom: 15px;
+}
+
+.aviso h3 {
+    color: #ffd89c;
+    margin-bottom: 8px;
+}
+
+.aviso p {
+    line-height: 1.6;
+}
+
+.contador {
+    margin-bottom: 25px;
+    padding: 15px;
+    border-radius: 12px;
+    background: rgba(255,120,0,0.08);
+    border: 1px solid rgba(255,120,0,0.2);
+}
+
+.vazio {
+    text-align: center;
+    padding: 25px;
+    color: #d6b98a;
+}
+
+@media(max-width:950px) {
+    .container-reserva,
+    .container-reservas {
+        width: 94%;
+    }
+
+    .navegacao button {
+        width: 100%;
+    }
+}
+</style>
+</head>
+
+<body>
+
+<img class="dragon dragon1"
+src="https://pngimg.com/uploads/dragon/dragon_PNG8455.png"
+alt="">
+
+<img class="dragon dragon2"
+src="https://pngimg.com/uploads/dragon/dragon_PNG8456.png"
+alt="">
+
+<header>
+    <h1>Reino do Dragão</h1>
+    <p>⚔ Tome Cuidado Com o Fogo ⚔</p>
+</header>
+
+<!--
+    AS DUAS PÁGINAS ESTÃO NO MESMO ARQUIVO.
+    O JavaScript alterna entre elas.
+-->
+<nav class="navegacao">
+    <button id="btnReserva" class="ativo" onclick="mostrarPagina('reserva')">
+         Fazer Reserva
+    </button>
+
+    <button id="btnConfirmadas" onclick="mostrarPagina('confirmadas')">
+         Reservas Confirmadas
+    </button>
+
+    <button id="btnFuncionarios" onclick="window.location.href='Painel_Funcionarios_Reino_do_Dragao.html'">
+          Área dos Funcionários
+    </button>
+</nav>
