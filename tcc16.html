@@ -1402,3 +1402,65 @@ if (data < dataHoje()) {
         );
         return;
     }
+
+
+    /* CRIA RESERVA */
+
+    const id = Date.now();
+
+    const reserva = {
+
+        id: id,
+
+        nome: nome,
+
+        gmail: email,
+        email: email,
+
+        telefone: telefone,
+
+        data: data,
+
+        pessoas: pessoas,
+
+        status: "Confirmada",
+
+        criadaEm:
+            new Date().toISOString()
+
+    };
+
+
+    reservas.push(reserva);
+
+
+    /* CRIA AVISO */
+
+    const avisos = obterAvisos();
+
+    const aviso = {
+
+        id:
+            Date.now() + 1,
+
+        reservaId:
+            id,
+
+        nome:
+            nome,
+
+        email:
+            email,
+        gmail:
+            email,
+
+        tipo:
+            "CONFIRMAÇÃO",
+
+        mensagem:
+            ` Olá ${nome}! Sua reserva foi confirmada para ${formatarData(data)} com ${pessoas} pessoa(s).`,
+
+        data:
+            new Date().toISOString()
+
+    };
