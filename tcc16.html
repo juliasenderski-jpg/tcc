@@ -1543,3 +1543,52 @@ function mostrarReservas() {
         .forEach(adicionarReserva);
 
 }
+
+
+/* ==================================================
+   ADICIONAR RESERVA NA TELA
+================================================== */
+
+function adicionarReserva(reserva) {
+
+    const card =
+        document.createElement("div");
+
+
+    card.className =
+        "cardReserva";
+
+
+    let botoes = "";
+
+
+    if (
+        reserva.status ===
+        "Confirmada"
+    ) {
+
+        if (podeCancelar(reserva)) {
+
+            botoes = `
+                <button
+                    class="btnCancelar"
+                    onclick="cancelarReserva(${reserva.id})"
+                >
+                    ❌ Cancelar Reserva
+                </button>
+            `;
+
+        } else {
+
+            botoes = `
+                <p class="status">
+                    ⚠ O cancelamento está bloqueado.
+                    <br>
+                    É necessário cancelar com pelo menos
+                    48 horas de antecedência.
+                </p>
+            `;
+
+        }
+
+    }
