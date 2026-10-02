@@ -127,3 +127,42 @@ function atualizar(){
     document.getElementById("ativas").textContent=todas.length;
     document.getElementById("pessoas").textContent=todas.reduce((s,r)=>s+Number(r.pessoas||0),0);
     document.getElementById("cancelamentos").textContent=avisos().filter(a=>a.tipo==="CANCELAMENTO").length;
+
+    const area=document.getElementById("reservas");
+    area.innerHTML="";
+    if(!lista.length){
+        area.innerHTML='<div class="vazio"> Nenhuma reserva encontrada.</div>';
+    }else{
+        lista.forEach(r=>{
+            const d=document.createElement("div");
+            d.className="reserva";
+            d.innerHTML=`
+                <h3> ${escapar(r.nome)} — CONFIRMADA</h3>
+                <div class="linhas">
+                  <p><strong> Data:</strong> ${dataBR(r.data)}</p>
+                  <p><strong> Pessoas:</strong> ${Number(r.pessoas)}</p>
+                  <p><strong> Gmail:</strong> ${escapar(r.gmail||r.email)}</p>
+                  <p><strong> Telefone:</strong> ${escapar(r.telefone)}</p>
+                </div
+                <p class="recebido">Recebida em ${dataHora(r.criadaEm)} • ID ${escapar(r.id)}</p>`;
+            area.appendChild(d);
+        });
+    }
+
+    const av=document.getElementById("avisos");
+    av.innerHTML="";
+    const listaAvisos=avisos().slice().reverse();
+    if(!listaAvisos.length){
+        av.innerHTML='<div class="vazio">Nenhuma notificação registrada.</div>';
+    }else{
+        listaAvisos.forEach(a=>{
+            const d=document.createElement("div");
+            d.className="aviso"+(a.tipo==="CANCELAMENTO"?" cancel":"");
+            d.innerHTML=`<strong>${a.tipo==="CANCELAMENTO"?"❌":"🔔"} ${escapar(a.tipo)}</strong>
+            <p>${escapar(a.mensagem)}</p>
+            <p><strong>Gmail:</strong> ${escapar(a.gmail||a.email||"Não informado")}</p>
+            <p><strong>Registrado:</strong> ${dataHora(a.data)}</p>`;
+            av.appendChild(d);
+        });
+    }
+}
