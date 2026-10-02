@@ -1464,3 +1464,30 @@ if (data < dataHoje()) {
             new Date().toISOString()
 
     };
+
+
+    avisos.push(aviso);
+
+    salvarDados(
+        reservas,
+        avisos
+    );
+
+
+    form.reset();
+
+    campoData.min =
+        dataHoje();
+
+
+    mostrarMensagem(
+        " Reserva confirmada com sucesso!",
+        "sucesso"
+    );
+
+
+    /* Atualiza a outra área caso o usuário vá para ela */
+    mostrarReservas();
+    mostrarAvisos();
+
+});
