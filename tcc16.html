@@ -1189,3 +1189,47 @@ function mostrarMensagem(texto, tipo) {
     }, 5000);
 
 }
+
+
+/* ==================================================
+   NAVEGAÇÃO ENTRE AS DUAS PÁGINAS
+================================================== */
+
+function mostrarPagina(pagina) {
+
+    const paginaReserva =
+        document.getElementById("paginaReserva");
+
+    const paginaConfirmadas =
+        document.getElementById("paginaConfirmadas");
+
+    const btnReserva =
+        document.getElementById("btnReserva");
+
+    const btnConfirmadas =
+        document.getElementById("btnConfirmadas");
+
+
+    paginaReserva.classList.remove("ativa");
+    paginaConfirmadas.classList.remove("ativa");
+
+    btnReserva.classList.remove("ativo");
+    btnConfirmadas.classList.remove("ativo");
+
+
+    if (pagina === "reserva") {
+
+        paginaReserva.classList.add("ativa");
+        btnReserva.classList.add("ativo");
+
+    } else {
+
+        paginaConfirmadas.classList.add("ativa");
+        btnConfirmadas.classList.add("ativo");
+
+        mostrarReservas();
+        mostrarAvisos();
+
+    }
+
+}
