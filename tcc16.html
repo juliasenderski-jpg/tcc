@@ -1491,3 +1491,24 @@ if (data < dataHoje()) {
     mostrarAvisos();
 
 });
+
+
+/* ==================================================
+   MOSTRAR RESERVAS
+================================================== */
+
+function mostrarReservas() {
+
+    const reservas =
+        obterReservas();
+
+
+    listaReservas.innerHTML = "";
+
+
+    const confirmadas =
+        reservas.filter(function(reserva) {
+
+            return reserva.status === "Confirmada";
+
+        });
