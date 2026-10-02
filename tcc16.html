@@ -1296,3 +1296,40 @@ const pessoas =
         return;
 
     }
+
+
+    if (!telefone) {
+
+        mostrarMensagem(
+            "Informe o telefone.",
+            "erro"
+        );
+
+        return;
+
+    }
+if (data < dataHoje()) {
+
+        mostrarMensagem(
+            "Não é possível reservar datas passadas.",
+            "erro"
+        );
+
+        return;
+
+    }
+
+
+    if (
+        pessoas < 1 ||
+        pessoas > LIMITE_RESERVA
+    ) {
+
+        mostrarMensagem(
+            "O máximo permitido é 30 pessoas por reserva.",
+            "erro"
+        );
+
+        return;
+
+    }
