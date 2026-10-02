@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Reino do Dragão | Sistema de Reservas</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=MedievalSharp&family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+
+<style>
+
+
+/* ==============================
+   RESET
+============================== */
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+
+/* ==============================
+   BODY
+============================== */
+
+body {
+
+    font-family: 'Poppins', sans-serif;
+
+    min-height: 100vh;
+
+    color: #f5e6c8;
+
+    overflow-x: hidden;
+
+    position: relative;
+
+    background:
+
+    linear-gradient(
+        rgba(0,0,0,0.88),
+        rgba(10,0,0,0.94)
+    ),
+
+    url("https://static.wikia.nocookie.net/rpg-rise-of-the-titans/images/6/6e/DragonRed.jpg/revision/latest/scale-to-width-down/500?cb=20190222000049&path-prefix=pt-br");
+
+    background-size: cover;
+
+    background-position: center;
+
+    background-attachment: fixed;
+}
+
+
+/* ==============================
+   EFEITOS
+============================== */
+
+body::before {
+
+    content: "";
+
+    position: fixed;
+
+    inset: 0;
+
+    background:
+
+    radial-gradient(
+        circle at top left,
+        rgba(255,0,0,0.18),
+        transparent 30%
+    ),
+
+    radial-gradient(
+        circle at bottom right,
+        rgba(255,120,0,0.15),
+        transparent 35%
+    ),
+
+    radial-gradient(
+        circle at center,
+        rgba(255,255,255,0.03),
+        transparent 45%
+    );
+
+    z-index: 0;
+
+    pointer-events: none;
+}
+
+
+/* ==============================
+   DRAGÕES
+============================== */
+
+.dragon {
+
+    position: fixed;
+
+    opacity: 0.10;
+
+    z-index: 0;
+
+    pointer-events: none;
+
+    filter:
+    drop-shadow(
+        0 0 25px
+        rgba(255,0,0,0.7)
+    );
+}
