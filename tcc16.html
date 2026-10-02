@@ -1158,3 +1158,34 @@ function formatarDataHora(valor) {
     );
 
 }
+
+function escapar(texto) {
+
+    return String(texto)
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;")
+        .replaceAll("'", "&#039;");
+
+}
+
+
+/* ==================================================
+   MENSAGEM
+================================================== */
+
+function mostrarMensagem(texto, tipo) {
+
+    mensagem.textContent = texto;
+
+    mensagem.className =
+        "mensagem " + tipo;
+
+    setTimeout(function() {
+
+        mensagem.className = "mensagem";
+
+    }, 5000);
+
+}
