@@ -166,3 +166,18 @@ function atualizar(){
         });
     }
 }
+function limpar(){
+    document.getElementById("fData").value="";
+    document.getElementById("fNome").value="";
+    atualizar();
+}
+function abrirPaginaCliente(){
+    window.location.href="Reino_do_Dragao_Sistema_Completo.html";
+}
+window.addEventListener("storage",function(e){
+    if(e.key===CHAVE_RESERVAS || e.key===CHAVE_AVISOS) atualizar();
+});
+atualizar();
+</script>
+</body>
+</html>
