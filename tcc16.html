@@ -1065,3 +1065,96 @@ function limparReservasCanceladas() {
         );
     }
 }
+
+
+function obterReservas() {
+
+    try {
+
+        return JSON.parse(
+            localStorage.getItem(CHAVE_RESERVAS)
+        ) || [];
+
+    } catch (erro) {
+
+        return [];
+
+    }
+
+}
+
+function obterAvisos() {
+
+    try {
+
+        return JSON.parse(
+            localStorage.getItem(CHAVE_AVISOS)
+        ) || [];
+
+    } catch (erro) {
+
+        return [];
+
+    }
+
+}
+
+function salvarDados(reservas, avisos) {
+
+    localStorage.setItem(
+        CHAVE_RESERVAS,
+        JSON.stringify(reservas)
+    );
+
+    localStorage.setItem(
+        CHAVE_AVISOS,
+        JSON.stringify(avisos)
+    );
+
+}
+
+
+/* ==================================================
+   DATA DE HOJE
+================================================== */
+
+function dataHoje() {
+
+    const hoje = new Date();
+
+    const ano = hoje.getFullYear();
+
+    const mes = String(
+        hoje.getMonth() + 1
+    ).padStart(2, "0");
+
+    const dia = String(
+        hoje.getDate()
+    ).padStart(2, "0");
+
+    return `${ano}-${mes}-${dia}`;
+
+}
+
+campoData.min = dataHoje();
+
+
+/* ==================================================
+   FORMATAÇÃO
+================================================== */
+
+function formatarData(data) {
+
+    const partes = data.split("-");
+
+    return `${partes[2]}/${partes[1]}/${partes[0]}`;
+
+}
+
+function formatarDataHora(valor) {
+
+    return new Date(valor).toLocaleString(
+        "pt-BR"
+    );
+
+}
