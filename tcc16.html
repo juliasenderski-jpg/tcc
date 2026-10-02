@@ -1609,3 +1609,24 @@ function adicionarReserva(reserva) {
             <strong> Telefone:</strong>
             ${escapar(reserva.telefone)}
         </p>
+
+    
+
+        <p>
+            <strong> Pessoas:</strong>
+            ${reserva.pessoas}
+        </p>
+
+        <p class="status">
+            <strong>⚔ Status:</strong>
+            ${escapar(reserva.status)}
+        </p>
+
+        ${botoes}
+
+    `;
+
+
+    listaReservas.appendChild(card);
+
+}
