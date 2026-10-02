@@ -1512,3 +1512,34 @@ function mostrarReservas() {
             return reserva.status === "Confirmada";
 
         });
+
+
+    contador.innerHTML =
+        ` <strong>${confirmadas.length}</strong> reserva(s) confirmada(s)`;
+
+
+    if (confirmadas.length === 0) {
+
+        listaReservas.innerHTML =
+            '<p class="vazio">Nenhuma reserva confirmada.</p>';
+
+        return;
+
+    }
+
+
+    confirmadas
+        .slice()
+        .sort(function(a, b) {
+
+            return new Date(
+                `${a.data}T${a.horario}`
+            ) -
+            new Date(
+                `${b.data}T${b.horario}`
+            );
+
+        })
+        .forEach(adicionarReserva);
+
+}
