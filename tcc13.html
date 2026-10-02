@@ -1,14 +1,27 @@
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Reino do Dragão | Painel dos Funcionários</title>
-<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=MedievalSharp&family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
-<style>
-*{box-sizing:border-box;margin:0;padding:0}
-body{
-    font-family:'Poppins',sans-serif;
-    min-height:100vh;
-    color:#f5e6c8;
-    background:
-      linear-gradient(rgba(0,0,0,.90),rgba(10,0,0,.96)),
-      url("https://static.wikia.nocookie.net/rpg-rise-of-the-titans/images/6/6e/DragonRed.jpg/revision/latest/scale-to-width-down/500?cb=20190222000049&path-prefix=pt-br");
-    background-size:cover;background-position:center;background-attachment:fixed;
+header{text-align:center;padding:55px 20px 35px;background:rgba(15,5,0,.88);border-bottom:3px solid #8b0000}
+header h1{font-family:'MedievalSharp',cursive;font-size:60px;color:#ffdf9d;letter-spacing:4px;text-shadow:0 0 12px #ff7b00,0 0 25px #8b0000}
+header p{margin-top:12px;font-family:'Cinzel',serif;letter-spacing:2px;color:#f5d9b0}
+.container{width:92%;max-width:1250px;margin:auto;padding:35px 0}
+.card{background:rgba(18,12,8,.94);border:2px solid #7a1c00;border-radius:22px;padding:30px;margin-bottom:25px;box-shadow:0 0 25px rgba(255,80,0,.16)}
+h2{font-family:'Cinzel',serif;color:#ffcf8b;font-size:30px;margin-bottom:20px}
+.topo{display:flex;justify-content:space-between;align-items:center;gap:20px}
+.sub{color:#d6b98a;margin-bottom:25px}
+.indicadores{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}
+.indicador{padding:18px;text-align:center;border-radius:15px;background:rgba(255,120,0,.08);border:1px solid rgba(255,120,0,.2)}
+.indicador span{display:block;color:#d6b98a;font-size:13px;margin-bottom:7px}
+.indicador strong{font-family:'Cinzel',serif;font-size:27px;color:#ffd89c}
+.filtros{display:grid;grid-template-columns:1fr 1fr auto;gap:15px;align-items:end;margin-bottom:20px}
+label{display:block;margin-bottom:7px;font-weight:600;color:#f1d5a7}
+input{width:100%;padding:13px;border-radius:10px;border:1px solid #5c1b00;background:#1b130f;color:white;font-size:15px}
+button{padding:13px 18px;border:0;border-radius:11px;background:linear-gradient(45deg,#7a1c00,#d43c00);color:white;font-weight:bold;cursor:pointer}
+button:hover{box-shadow:0 0 18px rgba(255,80,0,.4)}
+.reserva{background:#1a120d;border-left:6px solid #ff5e00;padding:20px;border-radius:16px;margin-bottom:15px}
+.reserva h3{color:#ffd89c;margin-bottom:12px}
+.linhas{display:grid;grid-template-columns:1fr 1fr;gap:6px 20px}
+.recebido{margin-top:12px;padding-top:10px;border-top:1px solid rgba(255,120,0,.15);font-size:12px;color:#bfa57c}
+.aviso{background:rgba(255,120,0,.07);border-left:5px solid #ff6a00;padding:15px;border-radius:11px;margin-bottom:12px}
+.aviso.cancel{border-left-color:#a00000}
+.vazio{text-align:center;padding:25px;color:#d6b98a;border:1px dashed #5c1b00;border-radius:12px}
+.acoes{display:flex;gap:10px;flex-wrap:wrap}
+@media(max-width:850px){.indicadores{grid-template-columns:1fr 1fr}.filtros{grid-template-columns:1fr}.linhas{grid-template-columns:1fr}}
+@media(max-width:550px){.indicadores{grid-template-columns:1fr}.topo{flex-direction:column;align-items:stretch}}
