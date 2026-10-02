@@ -152,3 +152,60 @@ body::before {
 
     animation: girar 20s linear infinite;
 }
+
+
+/* ==============================
+   ANIMAÇÕES
+============================== */
+
+@keyframes voar1 {
+
+    0% {
+        transform: translateY(0);
+    }
+
+    50% {
+        transform: translateY(-25px);
+    }
+
+    100% {
+        transform: translateY(0);
+    }
+
+}
+
+
+@keyframes voar2 {
+
+    0% {
+        transform:
+        scaleX(-1)
+        translateY(0);
+    }
+
+    50% {
+        transform:
+        scaleX(-1)
+        translateY(-20px);
+    }
+
+    100% {
+        transform:
+        scaleX(-1)
+        translateY(0);
+    }
+
+}
+
+
+@keyframes girar {
+
+    from {
+        transform: rotate(0deg);
+    }
+
+    to {
+        transform: rotate(360deg);
+    }
+
+}
