@@ -1592,3 +1592,20 @@ function adicionarReserva(reserva) {
         }
 
     }
+
+
+    card.innerHTML = `
+
+        <h3>
+             ${escapar(reserva.nome)}
+        </h3>
+
+        <p>
+            <strong> Email:</strong>
+            ${escapar(reserva.email)}
+        </p>
+
+        <p>
+            <strong> Telefone:</strong>
+            ${escapar(reserva.telefone)}
+        </p>
