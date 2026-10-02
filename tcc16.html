@@ -1016,3 +1016,52 @@ alt="">
 </footer>
 
 <script>
+
+/* ==================================================
+   CONFIGURAÇÕES
+================================================== */
+
+const LIMITE_RESERVA = 30;
+const LIMITE_DIA = 48;
+
+const CHAVE_RESERVAS = "reservasReinoDragoes";
+const CHAVE_AVISOS = "avisosReinoDragoes";
+
+
+/* ==================================================
+   ELEMENTOS
+================================================== */
+
+const form = document.getElementById("formReserva");
+const campoData = document.getElementById("data");
+const mensagem = document.getElementById("mensagem");
+
+const listaReservas =
+    document.getElementById("listaReservas");
+
+const listaAvisos =
+    document.getElementById("listaAvisos");
+
+const contador =
+    document.getElementById("contador");
+
+
+/* ==================================================
+   BANCO LOCAL
+================================================== */
+
+function limparReservasCanceladas() {
+
+    const reservas = obterReservas();
+
+    const ativas = reservas.filter(function(reserva) {
+        return reserva.status !== "Cancelada";
+    });
+
+    if (ativas.length !== reservas.length) {
+        localStorage.setItem(
+            CHAVE_RESERVAS,
+            JSON.stringify(ativas)
+        );
+    }
+}
