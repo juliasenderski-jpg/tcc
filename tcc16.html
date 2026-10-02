@@ -1233,3 +1233,40 @@ function mostrarPagina(pagina) {
     }
 
 }
+
+
+/* ==================================================
+   CRIAR RESERVA
+================================================== */
+
+form.addEventListener("submit", function(event) {
+
+    event.preventDefault();
+
+
+    const nome =
+        document.getElementById("nome")
+        .value
+        .trim();
+
+
+    const email =
+        document.getElementById("email")
+        .value
+        .trim();
+
+
+    const telefone =
+        document.getElementById("telefone")
+        .value
+        .trim();
+
+
+    const data =
+        document.getElementById("data")
+        .value;
+const pessoas =
+        Number(
+            document.getElementById("pessoas")
+            .value
+        );
