@@ -1688,3 +1688,28 @@ function cancelarReserva(id) {
         );
         return;
     }
+
+    const confirmar = confirm(
+        `Deseja cancelar a reserva de ${reserva.nome}?`
+    );
+
+    if (!confirmar) {
+        return;
+    }
+
+    // Cria o aviso antes de remover a reserva.
+    const dataCancelamento = new Date().toISOString();
+
+    avisos.push({
+        id: Date.now(),
+        reservaId: reserva.id,
+        nome: reserva.nome,
+        email: reserva.email,
+        gmail: reserva.gmail || reserva.email,
+        tipo: "CANCELAMENTO",
+        mensagem:
+            `A reserva de ${reserva.nome}, marcada para ${formatarData(
+                reserva.data
+            )}, foi cancelada com sucesso.`,
+        data: dataCancelamento
+    });
