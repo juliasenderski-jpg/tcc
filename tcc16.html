@@ -1333,3 +1333,41 @@ if (data < dataHoje()) {
         return;
 
     }
+
+
+    const dataHora =
+        new Date(`${data}T23:59:59`);
+
+
+    if (dataHora <= new Date()) {
+
+        mostrarMensagem(
+            "Escolha um horário futuro.",
+            "erro"
+        );
+
+        return;
+
+    }
+
+
+    /* LIMITE DIÁRIO */
+
+    const reservas = obterReservas();
+
+    const totalNoDia =
+        reservas
+        .filter(function(reserva) {
+
+            return (
+                reserva.data === data &&
+                reserva.status === "Confirmada"
+            );
+
+        })
+        .reduce(function(total, reserva) {
+
+            return total +
+                Number(reserva.pessoas);
+
+        }, 0);
