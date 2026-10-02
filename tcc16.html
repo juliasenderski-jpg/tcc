@@ -1735,3 +1735,23 @@ function cancelarReserva(id) {
         "sucesso"
     );
 }
+
+
+function mostrarAvisos() {
+
+    const avisos =
+        obterAvisos();
+
+
+    listaAvisos.innerHTML =
+        "";
+
+
+    if (avisos.length === 0) {
+
+        listaAvisos.innerHTML =
+            '<p class="vazio">Nenhum aviso novo.</p>';
+
+        return;
+
+    }
