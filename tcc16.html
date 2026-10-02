@@ -1793,3 +1793,32 @@ function mostrarAvisos() {
             );
 
         });
+
+}
+
+
+/* ==================================================
+   SINCRONIZAÇÃO
+================================================== */
+
+/*
+   Se outra aba do MESMO arquivo estiver aberta,
+   as alterações do localStorage são percebidas.
+*/
+
+window.addEventListener(
+    "storage",
+    function(event) {
+
+        if (
+            event.key === CHAVE_RESERVAS ||
+            event.key === CHAVE_AVISOS
+        ) {
+
+            mostrarReservas();
+            mostrarAvisos();
+
+        }
+
+    }
+);
