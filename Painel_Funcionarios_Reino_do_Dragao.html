@@ -48,7 +48,7 @@ button:hover{box-shadow:0 0 18px rgba(255,80,0,.4)}
 <body>
 <header>
 <h1>Reino do Dragão</h1>
-<p Painel dos Funcionários </p>
+<p>Painel dos Funcionários</p>
 </header>
 
 <main class="container">
@@ -96,6 +96,25 @@ function reservas(){
     try{return JSON.parse(localStorage.getItem(CHAVE_RESERVAS))||[]}
     catch(e){return []}
 }
+function dataHoje(){
+    const hoje=new Date();
+    const ano=hoje.getFullYear();
+    const mes=String(hoje.getMonth()+1).padStart(2,"0");
+    const dia=String(hoje.getDate()).padStart(2,"0");
+    return `${ano}-${mes}-${dia}`;
+}
+function removerReservasExpiradas(){
+    const todas=reservas();
+    const hoje=dataHoje();
+    const atuais=todas.filter(r=>{
+        const data=String(r.data||"");
+        return !/^\d{4}-\d{2}-\d{2}$/.test(data) || data>=hoje;
+    });
+    if(atuais.length!==todas.length){
+        localStorage.setItem(CHAVE_RESERVAS,JSON.stringify(atuais));
+    }
+    return atuais;
+}
 function avisos(){
     try{return JSON.parse(localStorage.getItem(CHAVE_AVISOS))||[]}
     catch(e){return []}
@@ -116,7 +135,7 @@ function atualizar(){
     const filtroData=document.getElementById("fData").value;
     const filtroNome=document.getElementById("fNome").value.trim().toLowerCase();
 
-    const todas=reservas().filter(r=>r.status==="Confirmada");
+    const todas=removerReservasExpiradas().filter(r=>r.status==="Confirmada");
     const lista=todas.filter(r=>{
         if(filtroData && r.data!==filtroData)return false;
         const n=String(r.nome||"").toLowerCase();
@@ -143,7 +162,7 @@ function atualizar(){
                   <p><strong> Pessoas:</strong> ${Number(r.pessoas)}</p>
                   <p><strong> Gmail:</strong> ${escapar(r.gmail||r.email)}</p>
                   <p><strong> Telefone:</strong> ${escapar(r.telefone)}</p>
-                </div
+                </div>
                 <p class="recebido">Recebida em ${dataHora(r.criadaEm)} • ID ${escapar(r.id)}</p>`;
             area.appendChild(d);
         });
