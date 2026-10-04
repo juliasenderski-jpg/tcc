@@ -1684,7 +1684,7 @@ function cancelarReserva(id) {
     // Mantém a regra das 48 horas.
     if (!podeCancelar(reserva)) {
         alert(
-            "❌ O cancelamento só é permitido com 48 horas ou mais de antecedência."
+            " O cancelamento só é permitido com 48 horas ou mais de antecedência."
         );
         return;
     }
@@ -1731,7 +1731,7 @@ function cancelarReserva(id) {
     mostrarAvisos();
 
     mostrarMensagem(
-        "✅ Reserva cancelada. O Gmail já pode ser usado novamente.",
+        " Reserva cancelada. O Gmail já pode ser usado novamente.",
         "sucesso"
     );
 }
@@ -1773,7 +1773,7 @@ function mostrarAvisos() {
             elemento.innerHTML = `
 
                 <h3>
-                    🔔 ${escapar(aviso.tipo)}
+                     ${escapar(aviso.tipo)}
                 </h3>
 
                 <p>
@@ -1781,7 +1781,7 @@ function mostrarAvisos() {
                 </p>
 
                 <p>
-                    <strong>📅 Aviso:</strong>
+                    <strong> Aviso:</strong>
                     ${formatarDataHora(aviso.data)}
                 </p>
 
