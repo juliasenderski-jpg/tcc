@@ -37,6 +37,7 @@
 - `DELETE /api/reservas/:id` com JSON `{ "cpf": "12345678901" }`
 - `POST /api/funcionarios/login` e `POST /api/funcionarios/logout`
 - `GET /api/reservas` (somente funcionário autenticado)
+- `POST /api/funcionarios/reservas/:id/cancelar` (somente funcionário autenticado; registra cancelamento e notificação)
 - `GET /api/notificacoes` (somente funcionário autenticado)
 - `GET /api/relatorios/resumo?inicio=AAAA-MM-DD&fim=AAAA-MM-DD` (somente funcionário autenticado; resumo e totais por data)
 - `GET /api/notificacoes?cpf=12345678901` (consulta do cliente)
@@ -69,4 +70,4 @@ Os testes verificam a validação do CPF, datas reais e a formatação da data r
 
 ## Relatório administrativo
 
-No painel dos funcionários, a seção **Relatório administrativo** permite escolher uma data inicial e final. O relatório mostra reservas confirmadas, pessoas previstas, reservas canceladas e vagas restantes por dia. Use **Exportar CSV** para abrir os dados em programas de planilha. O relatório inclui apenas datas em que há registros; dias sem reservas não aparecem na tabela.
+No painel dos funcionários, a seção **Reservas Recebidas** mostra os dados de cada reserva ativa e inclui a ação **Cancelar reserva**. A equipe precisa confirmar a ação; o sistema registra o cancelamento e uma notificação, sem apagar o histórico. A seção **Relatório administrativo** permite escolher uma data inicial e final. O relatório mostra reservas confirmadas, pessoas previstas, reservas canceladas e vagas restantes por dia. Use **Exportar CSV** para abrir os dados em programas de planilha. O relatório inclui apenas datas em que há registros; dias sem reservas não aparecem na tabela.
