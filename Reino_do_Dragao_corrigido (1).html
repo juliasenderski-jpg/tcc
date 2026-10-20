@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#120c08"><title>Reino do Dragão | Reservas</title>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=MedievalSharp&family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box}body{margin:0;min-height:100vh;font-family:Poppins,sans-serif;color:#f5e6c8;background:linear-gradient(#080504e8,#100604f5),url('https://static.wikia.nocookie.net/rpg-rise-of-the-titans/images/6/6e/DragonRed.jpg/revision/latest/scale-to-width-down/500?cb=20190222000049&path-prefix=pt-br') center/cover fixed}
+header{text-align:center;padding:38px 16px 25px;background:#100805e8;border-bottom:3px solid #8b0000}h1{font:clamp(38px,7vw,62px) MedievalSharp,cursive;color:#ffdf9d;margin:0;text-shadow:0 0 15px #8b0000}header p{font-family:Cinzel,serif;letter-spacing:2px}
+nav{display:flex;justify-content:center;gap:10px;padding:18px;flex-wrap:wrap}.wrap{width:min(900px,92%);margin:10px auto 30px}.card{background:#120c08f2;border:2px solid #7a1c00;border-radius:18px;padding:clamp(18px,4vw,32px);box-shadow:0 0 25px #ff500022}h2{font:600 25px Cinzel,serif;color:#ffcf8b;margin-top:0}label{display:block;margin:15px 0 6px;color:#f1d5a7;font-weight:600}input{width:100%;padding:12px;border-radius:9px;border:1px solid #75401e;background:#1b130f;color:#fff;font:inherit}button{padding:12px 17px;border:0;border-radius:9px;background:linear-gradient(45deg,#7a1c00,#c83a18);color:#fff;font-weight:600;cursor:pointer;margin-top:15px}button:hover{filter:brightness(1.15)}nav button{margin:0}.ativo{outline:2px solid #ffcf8b}.pagina{display:none}.pagina.ativa{display:block}.mensagem{margin-top:14px;padding:10px;border-radius:8px;white-space:pre-line}.ok{background:#16351f;color:#c9ffd4}.erro{background:#481818;color:#ffd0d0}.info{margin-top:22px;padding:16px;background:#ff780012;border-left:4px solid #a52b00;line-height:1.9}.reserva,.aviso{background:#1b120d;border-left:5px solid #d64a16;padding:16px;border-radius:10px;margin:12px 0}.reserva h3{color:#ffd89c;margin-top:0}.muted{color:#d6b98a;font-size:13px}footer{text-align:center;padding:25px;color:#c9ac80}@media(max-width:500px){nav{padding:12px}.card{padding:18px}}
+</style></head>
+<body>
+<header><h1>Reino do Dragão</h1><p>TOME CUIDADO COM O FOGO</p></header>
+<nav aria-label="Navegação"><button id="btnReserva" class="ativo" type="button">Fazer reserva</button><button id="btnMinhas" type="button">Minha reserva</button><button type="button" onclick="location.href='Painel_Funcionarios_Reino_do_Dragao(1)(2).html'">Painel dos funcionários</button></nav>
+<main class="wrap">
+<section id="paginaReserva" class="pagina ativa"><div class="card"><h2>Reserva de mesas</h2>
+<form id="formReserva">
+<label for="nome">Nome completo</label><input id="nome" required minlength="3" autocomplete="name">
+<label for="cpf">CPF do responsável</label><input id="cpf" required inputmode="numeric" maxlength="14" placeholder="000.000.000-00">
+<label for="telefone">Telefone</label><input id="telefone" required type="tel" autocomplete="tel">
+<label for="data">Data da reserva</label><input id="data" required type="date">
+<label for="pessoas">Quantidade de pessoas</label><input id="pessoas" required type="number" min="1" max="30">
+<button type="submit">Confirmar reserva</button>
+</form><div id="mensagem" role="status" aria-live="polite"></div>
+<div class="info"><strong>Regras do Reino</strong><br>• Máximo de 30 pessoas por reserva.<br>• Até 48 pessoas reservadas por dia.<br>• Reservas para datas passadas são bloqueadas.<br>• É permitida uma reserva ativa por CPF.<br>• Cancelamentos só podem ser feitos com pelo menos 48 horas de antecedência.<br>• Os dados deste protótipo ficam salvos neste navegador.</div></div></section>
+<section id="paginaMinhas" class="pagina"><div class="card"><h2>Acesse sua reserva</h2><p>Informe o CPF usado no cadastro para consultar ou cancelar sua reserva.</p><form id="formLogin"><label for="cpfLogin">CPF do responsável</label><input id="cpfLogin" required inputmode="numeric" maxlength="14" placeholder="000.000.000-00"><button type="submit">Consultar minha reserva</button></form><div id="mensagemLogin" role="status" aria-live="polite"></div><div id="areaPrivada" hidden><div id="listaReservas"></div><h2>Avisos</h2><div id="listaAvisos"></div></div></div></section>
+</main><footer>© 2026 Reino do Dragão</footer>
+<script>
+const KR='reservasReinoDragoes', KA='avisosReinoDragoes';
+const get=(k)=>{try{return JSON.parse(localStorage.getItem(k)||'[]')}catch{return []}};
+const save=(k,v)=>localStorage.setItem(k,JSON.stringify(v));
+const digits=v=>String(v||'').replace(/\D/g,'');
+const today=()=>{const d=new Date();return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`};
+const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const br=d=>d?d.split('-').reverse().join('/'):'';
+function msg(id,text,ok=false){const e=document.getElementById(id);e.className='mensagem '+(ok?'ok':'erro');e.textContent=text}
+function switchPage(which){const a=which==='reserva';document.getElementById('paginaReserva').classList.toggle('ativa',a);document.getElementById('paginaMinhas').classList.toggle('ativa',!a);document.getElementById('btnReserva').classList.toggle('ativo',a);document.getElementById('btnMinhas').classList.toggle('ativo',!a)}
+document.getElementById('btnReserva').onclick=()=>switchPage('reserva');document.getElementById('btnMinhas').onclick=()=>switchPage('minhas');
+document.getElementById('cpf').addEventListener('input',e=>{let d=digits(e.target.value).slice(0,11);e.target.value=d.replace(/(\d{3})(\d)/,'$1.$2').replace(/(\d{3})(\d)/,'$1.$2').replace(/(\d{3})(\d{1,2})$/,'$1-$2')});
+document.getElementById('cpfLogin').addEventListener('input',e=>{let d=digits(e.target.value).slice(0,11);e.target.value=d.replace(/(\d{3})(\d)/,'$1.$2').replace(/(\d{3})(\d)/,'$1.$2').replace(/(\d{3})(\d{1,2})$/,'$1-$2')});
+document.getElementById('formReserva').addEventListener('submit',e=>{
+e.preventDefault();const nome=document.getElementById('nome').value.trim(),cpf=digits(document.getElementById('cpf').value),telefone=document.getElementById('telefone').value.trim(),data=document.getElementById('data').value,pessoas=Number(document.getElementById('pessoas').value);
+if(cpf.length!==11){msg('mensagem','Informe um CPF com 11 números.');return}
+if(data<today()){msg('mensagem','Escolha uma data de hoje em diante.');return}
+if(!Number.isInteger(pessoas)||pessoas<1||pessoas>30){msg('mensagem','A reserva deve ter entre 1 e 30 pessoas.');return}
+const all=get(KR).filter(r=>r.status==='Confirmada');
+if(all.some(r=>digits(r.cpf)===cpf)){msg('mensagem','Este CPF já possui uma reserva ativa. Consulte ou cancele a reserva existente antes de fazer outra.');return}
+const total=all.filter(r=>r.data===data).reduce((s,r)=>s+Number(r.pessoas||0),0);
+if(total+pessoas>48){msg('mensagem',`Não há capacidade suficiente para essa data. Já existem ${total} pessoa(s) reservadas; o limite é 48.`);return}
+const r={id:(crypto.randomUUID?crypto.randomUUID():String(Date.now())),nome,cpf,telefone,data,pessoas,criadaEm:new Date().toISOString(),status:'Confirmada'};
+all.push(r);save(KR,all);save(KA,[...get(KA),{tipo:'RESERVA',cpf,mensagem:`Reserva confirmada para ${nome}, em ${br(data)} (${pessoas} pessoa(s)).`,data:new Date().toISOString()}]);
+e.target.reset();msg('mensagem','Reserva confirmada! Guarde o CPF para consultar sua reserva.',true);
+});
+document.getElementById('formLogin').addEventListener('submit',e=>{e.preventDefault();const cpf=digits(document.getElementById('cpfLogin').value);if(cpf.length!==11){msg('mensagemLogin','Informe um CPF com 11 números.');return}renderMinha(cpf)});
+function renderMinha(cpf){const all=get(KR).filter(r=>digits(r.cpf)===cpf&&r.status==='Confirmada');const area=document.getElementById('areaPrivada');area.hidden=false;const list=document.getElementById('listaReservas');list.innerHTML='';
+if(!all.length){list.innerHTML='<div class="reserva">Nenhuma reserva ativa encontrada para este CPF.</div>'}else all.forEach(r=>{const el=document.createElement('div');el.className='reserva';const can=(new Date(r.data+'T00:00:00').getTime()-Date.now())>=48*60*60*1000;el.innerHTML=`<h3>Reserva confirmada</h3><p><b>Nome:</b> ${esc(r.nome)}</p><p><b>Data:</b> ${br(r.data)}</p><p><b>Pessoas:</b> ${Number(r.pessoas)}</p><p class="muted">Código: ${esc(r.id)}</p>${can?'<button type="button" data-cancel="'+esc(r.id)+'">Cancelar reserva</button>':'<p class="muted">O cancelamento exige pelo menos 48 horas de antecedência.</p>'}`;list.appendChild(el)});
+list.querySelectorAll('[data-cancel]').forEach(b=>b.onclick=()=>cancelar(b.dataset.cancel,cpf));
+const avis=get(KA).filter(a=>digits(a.cpf)===cpf).slice(-10).reverse();document.getElementById('listaAvisos').innerHTML=avis.length?avis.map(a=>`<div class="aviso"><b>${esc(a.tipo)}</b><p>${esc(a.mensagem)}</p><small>${new Date(a.data).toLocaleString('pt-BR')}</small></div>`).join(''):'<p class="muted">Nenhum aviso registrado.</p>';
+msg('mensagemLogin','Consulta realizada.',true)}
+function cancelar(id,cpf){const all=get(KR),r=all.find(x=>String(x.id)===String(id)&&digits(x.cpf)===cpf&&x.status==='Confirmada');if(!r){msg('mensagemLogin','Não foi possível localizar essa reserva. Atualize a consulta.');return}const diff=new Date(r.data+'T00:00:00').getTime()-Date.now();if(diff<48*60*60*1000){msg('mensagemLogin','Cancelamento não permitido: é necessário cancelar com pelo menos 48 horas de antecedência.');return}save(KR,all.filter(x=>String(x.id)!==String(id)));save(KA,[...get(KA),{tipo:'CANCELAMENTO',cpf,mensagem:`A reserva de ${r.nome} para ${br(r.data)} foi cancelada. A capacidade foi liberada.`,data:new Date().toISOString()}]);renderMinha(cpf)}
+window.addEventListener('storage',()=>{const cpf=digits(document.getElementById('cpfLogin').value);if(cpf.length===11&&!document.getElementById('areaPrivada').hidden)renderMinha(cpf)});
+document.getElementById('data').min=today();
+</script></body></html>
