@@ -71,3 +71,10 @@ Os testes verificam a validação do CPF, datas reais e a formatação da data r
 ## Relatório administrativo
 
 No painel dos funcionários, a seção **Reservas Recebidas** mostra os dados de cada reserva ativa e inclui a ação **Cancelar reserva**. A equipe precisa confirmar a ação; o sistema registra o cancelamento e uma notificação, sem apagar o histórico. A seção **Relatório administrativo** permite escolher uma data inicial e final. O relatório mostra reservas confirmadas, pessoas previstas, reservas canceladas e vagas restantes por dia. Use **Exportar CSV** para abrir os dados em programas de planilha. O relatório inclui apenas datas em que há registros; dias sem reservas não aparecem na tabela.
+
+
+## Histórico administrativo (versão 5)
+
+No painel de funcionários, a seção **Histórico de reservas** permite filtrar por nome/CPF, intervalo de datas e situação (todas, confirmadas ou canceladas), além de exportar os resultados exibidos para CSV. A API administrativa `GET /api/historico-reservas` exige sessão de funcionário e limita cada consulta a 500 registros; refine os filtros para consultar períodos menores.
+
+Após atualizar, execute `npm install`, `npm test`, `npm run check` e `npm start`. A consulta do histórico deve ser testada com o MySQL local configurado e ligado.
