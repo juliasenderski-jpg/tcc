@@ -333,6 +333,45 @@ app.get('/api/relatorios/resumo', exigirFuncionario, async (req, res) => {
   }
 });
 
+app.get('/api/historico-reservas', exigirFuncionario, async (req, res) => {
+  const cpfBusca = req.query.cpf ? cpfSoDigitos(req.query.cpf) : '';
+  const busca = String(req.query.busca || '').trim();
+  const inicio = req.query.inicio ? String(req.query.inicio) : '';
+  const fim = req.query.fim ? String(req.query.fim) : '';
+  const status = String(req.query.status || 'Todos');
+  if (req.query.cpf && !/^\d{11}$/.test(cpfBusca)) return erro(res, 400, 'Informe um CPF com 11 números.');
+  if (inicio && !dataValida(inicio)) return erro(res, 400, 'Data inicial inválida.');
+  if (fim && !dataValida(fim)) return erro(res, 400, 'Data final inválida.');
+  if (inicio && fim && inicio > fim) return erro(res, 400, 'A data inicial não pode ser posterior à data final.');
+  if (!['Todos', 'Confirmada', 'Cancelada'].includes(status)) return erro(res, 400, 'Filtro de status inválido.');
+  const where = [];
+  const params = [];
+  if (cpfBusca) { where.push('c.cpf = ?'); params.push(cpfBusca); }
+  if (busca) {
+    const cpfNumerico = cpfSoDigitos(busca);
+    where.push('(c.nome LIKE ? OR c.cpf LIKE ?)');
+    params.push(`%${busca}%`, `%${cpfNumerico || busca}%`);
+  }
+  if (inicio) { where.push('r.data_reserva >= ?'); params.push(inicio); }
+  if (fim) { where.push('r.data_reserva <= ?'); params.push(fim); }
+  if (status !== 'Todos') { where.push('r.status = ?'); params.push(status); }
+  try {
+    const sql = `SELECT r.id, c.nome, c.cpf, c.telefone,
+        DATE_FORMAT(r.data_reserva, '%Y-%m-%d') AS data,
+        r.quantidade_pessoas AS pessoas, r.status,
+        DATE_FORMAT(r.criada_em, '%Y-%m-%d %H:%i:%s') AS criadaEm,
+        DATE_FORMAT(r.cancelada_em, '%Y-%m-%d %H:%i:%s') AS canceladaEm
+      FROM reservas r JOIN clientes c ON c.id = r.cliente_id
+      ${where.length ? 'WHERE ' + where.join(' AND ') : ''}
+      ORDER BY r.data_reserva DESC, r.criada_em DESC LIMIT 500`;
+    const [rows] = await pool.execute(sql, params);
+    res.json({ resultados: rows, limite: 500 });
+  } catch (e) {
+    console.error(e);
+    erro(res, 500, 'Não foi possível consultar o histórico de reservas.');
+  }
+});
+
 app.get('/api/reservas/cliente/:cpf', async (req, res) => {
   const cpf = cpfSoDigitos(req.params.cpf);
   if (!/^\d{11}$/.test(cpf)) return erro(res, 400, 'CPF inválido.');
