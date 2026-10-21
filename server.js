@@ -238,6 +238,53 @@ app.get('/api/reservas', exigirFuncionario, async (req, res) => {
   }
 });
 
+app.post('/api/funcionarios/reservas/:id/cancelar', exigirFuncionario, async (req, res) => {
+  const id = Number(req.params.id);
+  if (!Number.isSafeInteger(id) || id < 1) return erro(res, 400, 'Identificador de reserva inválido.');
+  const conn = await pool.getConnection();
+  let lockData = null;
+  try {
+    const [dados] = await conn.execute(
+      "SELECT DATE_FORMAT(data_reserva, '%Y-%m-%d') AS data_reserva FROM reservas WHERE id = ? AND status = 'Confirmada'",
+      [id]
+    );
+    if (!dados.length) return erro(res, 404, 'Reserva ativa não encontrada. Ela pode já ter sido cancelada.');
+    lockData = `reino_data_${String(dados[0].data_reserva).slice(0, 10)}`;
+    const [resultadoLock] = await conn.query('SELECT GET_LOCK(?, 5) AS adquirido', [lockData]);
+    if (Number(resultadoLock[0].adquirido) !== 1) {
+      lockData = null;
+      return erro(res, 503, 'Não foi possível bloquear a data agora. Tente novamente.');
+    }
+    await conn.beginTransaction();
+    const [rows] = await conn.execute(
+      `SELECT r.id, r.data_reserva, r.quantidade_pessoas, c.cpf, c.nome
+       FROM reservas r JOIN clientes c ON c.id = r.cliente_id
+       WHERE r.id = ? AND r.status = 'Confirmada' FOR UPDATE`, [id]
+    );
+    if (!rows.length) {
+      await conn.rollback();
+      return erro(res, 404, 'A reserva já não está ativa. Atualize a lista.');
+    }
+    const r = rows[0];
+    await conn.execute(
+      "UPDATE reservas SET status = 'Cancelada', cancelada_em = CURRENT_TIMESTAMP WHERE id = ?", [id]
+    );
+    await conn.execute(
+      'INSERT INTO notificacoes (reserva_id, cpf_cliente, tipo, mensagem) VALUES (?, ?, ?, ?)',
+      [id, r.cpf, 'CANCELAMENTO', `A reserva de ${r.nome} para ${formatarDataISO(r.data_reserva)} foi cancelada pela equipe. A capacidade foi liberada.`]
+    );
+    await conn.commit();
+    res.json({ mensagem: 'Reserva cancelada pela equipe. A capacidade foi liberada.' });
+  } catch (e) {
+    await conn.rollback().catch(() => {});
+    console.error(e);
+    erro(res, 500, 'Não foi possível cancelar a reserva.');
+  } finally {
+    if (lockData) { try { await conn.query('SELECT RELEASE_LOCK(?)', [lockData]); } catch {} }
+    conn.release();
+  }
+});
+
 app.get('/api/relatorios/resumo', exigirFuncionario, async (req, res) => {
   const hoje = hojeLocal();
   const inicio = String(req.query.inicio || hoje);
