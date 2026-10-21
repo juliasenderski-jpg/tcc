@@ -101,6 +101,20 @@ button:hover{box-shadow:0 0 18px rgba(255,80,0,.4)}
 </section>
 
 <section class="card">
+<h2>Histórico de reservas</h2>
+<p class="sub">Consulte reservas confirmadas e canceladas. Por segurança, a pesquisa retorna no máximo 500 registros por consulta.</p>
+<div class="filtros">
+  <div><label for="histBusca">Nome ou CPF</label><input type="search" id="histBusca" placeholder="Pesquisar nome ou CPF"></div>
+  <div><label for="histInicio">Data inicial</label><input type="date" id="histInicio"></div>
+  <div><label for="histFim">Data final</label><input type="date" id="histFim"></div>
+  <div><label for="histStatus">Situação</label><select id="histStatus"><option value="Todos">Todas</option><option value="Confirmada">Confirmada</option><option value="Cancelada">Cancelada</option></select></div>
+  <div class="acoes"><button type="button" onclick="buscarHistorico()">Pesquisar</button><button type="button" onclick="exportarHistorico()">Exportar CSV</button><button type="button" onclick="limparHistorico()">Limpar</button></div>
+</div>
+<div id="histResumo" class="sub" style="margin:10px 0">Faça uma pesquisa para visualizar o histórico.</div>
+<div id="histTabela"></div>
+</section>
+
+<section class="card">
 <h2> Notificações</h2>
 <div id="avisos"></div>
 </section>
@@ -146,6 +160,43 @@ function exportarRelatorio(){
   const csv='\uFEFF'+linhas.map(l=>l.map(v=>'"'+String(v??'').replace(/"/g,'""')+'"').join(';')).join('\r\n');
   const blob=new Blob([csv],{type:'text/csv;charset=utf-8;'});const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download=`relatorio-reino-do-dragao-${ultimoRelatorio.intervalo.inicio}-${ultimoRelatorio.intervalo.fim}.csv`;document.body.appendChild(a);a.click();a.remove();URL.revokeObjectURL(url);
 }
+
+let ultimoHistorico=[];
+function csvCelula(v){return '"'+String(v??'').replace(/"/g,'""')+'"';}
+async function buscarHistorico(){
+  const params=new URLSearchParams();
+  const busca=document.getElementById('histBusca').value.trim();
+  const inicio=document.getElementById('histInicio').value;
+  const fim=document.getElementById('histFim').value;
+  const status=document.getElementById('histStatus').value;
+  const tabela=document.getElementById('histTabela');
+  if(inicio&&fim&&inicio>fim){alert('A data inicial não pode ser posterior à data final.');return;}
+  if(busca){
+    const cpf=busca.replace(/\D/g,'');
+    if(/^\d+$/.test(busca.replace(/[.\-\s]/g,''))&&cpf.length!==11){alert('Para pesquisar por CPF, informe os 11 números.');return;}
+    params.set('busca',busca);
+    if(cpf.length===11)params.set('cpf',cpf);
+  }
+  if(inicio)params.set('inicio',inicio);
+  if(fim)params.set('fim',fim);
+  if(status!=='Todos')params.set('status',status);
+  tabela.innerHTML='<div class="vazio">Consultando histórico...</div>';
+  try{
+    const resposta=await api('/historico-reservas?'+params.toString());
+    ultimoHistorico=resposta.resultados||[];
+    document.getElementById('histResumo').textContent=`${ultimoHistorico.length} registro(s) encontrado(s).${ultimoHistorico.length===resposta.limite?' Exibindo o limite de 500 registros; refine os filtros para consultar outros.':''}`;
+    if(!ultimoHistorico.length){tabela.innerHTML='<div class="vazio">Nenhuma reserva encontrada com esses filtros.</div>';return;}
+    tabela.innerHTML='<div style="overflow-x:auto"><table style="width:100%;border-collapse:collapse;min-width:850px"><thead><tr>'+['ID','Cliente','CPF','Telefone','Data da reserva','Pessoas','Situação','Criada em','Cancelada em'].map(t=>`<th style="text-align:left;padding:10px;border-bottom:1px solid #7a1c00">${t}</th>`).join('')+'</tr></thead><tbody>'+ultimoHistorico.map(r=>`<tr>${[r.id,esc(r.nome),esc(r.cpf),esc(r.telefone),dataBR(r.data),Number(r.pessoas),esc(r.status),esc(r.criadaEm||''),esc(r.canceladaEm||'—')].map(v=>`<td style="padding:10px;border-bottom:1px solid #392317">${v}</td>`).join('')}</tr>`).join('')+'</tbody></table></div>';
+  }catch(e){ultimoHistorico=[];document.getElementById('histResumo').textContent='Não foi possível carregar o histórico.';tabela.innerHTML=`<div class="vazio">${esc(e.message)}</div>`;}
+}
+function exportarHistorico(){
+  if(!ultimoHistorico.length){alert('Faça uma pesquisa com resultados antes de exportar.');return;}
+  const cabecalho=['ID','Nome','CPF','Telefone','Data da reserva','Pessoas','Situação','Criada em','Cancelada em'];
+  const linhas=[cabecalho,...ultimoHistorico.map(r=>[r.id,r.nome,r.cpf,r.telefone,r.data,r.pessoas,r.status,r.criadaEm||'',r.canceladaEm||''])];
+  const csv='\uFEFF'+linhas.map(l=>l.map(csvCelula).join(';')).join('\r\n');
+  const blob=new Blob([csv],{type:'text/csv;charset=utf-8;'});const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download=`historico-reservas-reino-do-dragao-${hojeISO()}.csv`;document.body.appendChild(a);a.click();a.remove();URL.revokeObjectURL(url);
+}
+function limparHistorico(){document.getElementById('histBusca').value='';document.getElementById('histInicio').value='';document.getElementById('histFim').value='';document.getElementById('histStatus').value='Todos';buscarHistorico();}
 
 async function atualizar(){
   const filtroData=document.getElementById('fData').value;
