@@ -74,6 +74,23 @@ button:hover{box-shadow:0 0 18px rgba(255,80,0,.4)}
 </section>
 
 <section class="card">
+<h2>Relatório administrativo</h2>
+<p class="sub">Consulte as reservas confirmadas, pessoas previstas, cancelamentos e vagas disponíveis por data.</p>
+<div class="filtros">
+  <div><label for="relInicio">Data inicial</label><input type="date" id="relInicio"></div>
+  <div><label for="relFim">Data final</label><input type="date" id="relFim"></div>
+  <div class="acoes"><button type="button" onclick="gerarRelatorio()">Gerar relatório</button><button type="button" onclick="exportarRelatorio()">Exportar CSV</button></div>
+</div>
+<div class="indicadores">
+  <div class="indicador"><span>Reservas confirmadas</span><strong id="relReservas">—</strong></div>
+  <div class="indicador"><span>Pessoas previstas</span><strong id="relPessoas">—</strong></div>
+  <div class="indicador"><span>Reservas canceladas</span><strong id="relCanceladas">—</strong></div>
+  <div class="indicador"><span>Vagas restantes por dia</span><strong id="relVagas">—</strong></div>
+</div>
+<div id="relTabela" style="margin-top:20px"><div class="vazio">Escolha o período e gere o relatório.</div></div>
+</section>
+
+<section class="card">
 <h2>Reservas Recebidas</h2>
 <div class="filtros">
 <div><label>Data</label><input type="date" id="fData" onchange="atualizar()"></div>
@@ -95,12 +112,41 @@ const API='/api';
 const esc=t=>String(t??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[c]));
 const dataBR=d=>d?String(d).slice(0,10).split('-').reverse().join('/'):'';
 const dataHora=v=>v?new Date(v).toLocaleString('pt-BR'):'';
-async function api(url){
-  const response=await fetch(`${API}${url}`, { credentials: 'same-origin' });
+async function api(url, options={}){
+  const response=await fetch(`${API}${url}`, { credentials: 'same-origin', ...options, headers: { 'Content-Type':'application/json', ...(options.headers||{}) } });
   const body=await response.json().catch(()=>({}));
   if(!response.ok)throw new Error(body.erro||'Falha ao consultar o servidor.');
   return body;
 }
+let ultimoRelatorio=null;
+function hojeISO(){const d=new Date();return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;}
+document.getElementById('relInicio').value=hojeISO();
+document.getElementById('relFim').value=hojeISO();
+async function gerarRelatorio(){
+  const inicio=document.getElementById('relInicio').value;
+  const fim=document.getElementById('relFim').value;
+  const area=document.getElementById('relTabela');
+  if(!inicio||!fim||inicio>fim){area.innerHTML='<div class="vazio">Informe um intervalo válido.</div>';return;}
+  area.innerHTML='<div class="vazio">Gerando relatório...</div>';
+  try{
+    const rel=await api('/relatorios/resumo?'+new URLSearchParams({inicio,fim}).toString());
+    ultimoRelatorio=rel;
+    document.getElementById('relReservas').textContent=rel.totais.reservasConfirmadas;
+    document.getElementById('relPessoas').textContent=rel.totais.pessoasConfirmadas;
+    document.getElementById('relCanceladas').textContent=rel.totais.reservasCanceladas;
+    const diasComDados=rel.dias;
+    document.getElementById('relVagas').textContent=diasComDados.length?Math.min(...diasComDados.map(d=>d.vagasRestantes)):'—';
+    if(!diasComDados.length){area.innerHTML='<div class="vazio">Não há reservas registradas nesse período.</div>';return;}
+    area.innerHTML='<div style="overflow-x:auto"><table style="width:100%;border-collapse:collapse;min-width:650px"><thead><tr><th style="text-align:left;padding:12px;border-bottom:1px solid #7a1c00">Data</th><th style="padding:12px;border-bottom:1px solid #7a1c00">Reservas ativas</th><th style="padding:12px;border-bottom:1px solid #7a1c00">Pessoas</th><th style="padding:12px;border-bottom:1px solid #7a1c00">Canceladas</th><th style="padding:12px;border-bottom:1px solid #7a1c00">Vagas restantes</th></tr></thead><tbody>'+diasComDados.map(d=>`<tr><td style="padding:12px;border-bottom:1px solid #392317">${dataBR(d.data)}</td><td style="text-align:center;padding:12px;border-bottom:1px solid #392317">${d.reservasConfirmadas}</td><td style="text-align:center;padding:12px;border-bottom:1px solid #392317">${d.pessoasConfirmadas}</td><td style="text-align:center;padding:12px;border-bottom:1px solid #392317">${d.reservasCanceladas}</td><td style="text-align:center;padding:12px;border-bottom:1px solid #392317">${d.vagasRestantes}</td></tr>`).join('')+'</tbody></table></div>';
+  }catch(e){ultimoRelatorio=null;area.innerHTML=`<div class="vazio">Não foi possível gerar o relatório. ${esc(e.message)}</div>`;}
+}
+function exportarRelatorio(){
+  if(!ultimoRelatorio){alert('Gere um relatório antes de exportar.');return;}
+  const linhas=[['Data','Reservas confirmadas','Pessoas confirmadas','Reservas canceladas','Vagas restantes'],...ultimoRelatorio.dias.map(d=>[d.data,d.reservasConfirmadas,d.pessoasConfirmadas,d.reservasCanceladas,d.vagasRestantes])];
+  const csv='\uFEFF'+linhas.map(l=>l.map(v=>'"'+String(v??'').replace(/"/g,'""')+'"').join(';')).join('\r\n');
+  const blob=new Blob([csv],{type:'text/csv;charset=utf-8;'});const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download=`relatorio-reino-do-dragao-${ultimoRelatorio.intervalo.inicio}-${ultimoRelatorio.intervalo.fim}.csv`;document.body.appendChild(a);a.click();a.remove();URL.revokeObjectURL(url);
+}
+
 async function atualizar(){
   const filtroData=document.getElementById('fData').value;
   const filtroNome=document.getElementById('fNome').value.trim();
@@ -120,7 +166,8 @@ async function atualizar(){
     if(!lista.length)area.innerHTML='<div class="vazio">Nenhuma reserva encontrada.</div>';
     lista.forEach(r=>{
       const d=document.createElement('div');d.className='reserva';
-      d.innerHTML=`<h3>${esc(r.nome)} — CONFIRMADA</h3><div class="linhas"><p><strong>Data:</strong> ${dataBR(r.data)}</p><p><strong>Pessoas:</strong> ${Number(r.pessoas)}</p><p><strong>CPF:</strong> ${esc(r.cpf)}</p><p><strong>Telefone:</strong> ${esc(r.telefone)}</p></div><p class="recebido">Recebida em ${dataHora(r.criadaEm)} • ID ${esc(r.id)}</p>`;
+      d.innerHTML=`<h3>${esc(r.nome)} — CONFIRMADA</h3><div class="linhas"><p><strong>Data:</strong> ${dataBR(r.data)}</p><p><strong>Pessoas:</strong> ${Number(r.pessoas)}</p><p><strong>CPF:</strong> ${esc(r.cpf)}</p><p><strong>Telefone:</strong> ${esc(r.telefone)}</p></div><p class="recebido">Recebida em ${dataHora(r.criadaEm)} • ID ${esc(r.id)}</p><div class="acoes" style="margin-top:14px"><button type="button" data-cancelar="${Number(r.id)}" style="background:linear-gradient(45deg,#5a0000,#a00000)">Cancelar reserva</button></div>`;
+      d.querySelector('[data-cancelar]').addEventListener('click',()=>cancelarPelaEquipe(r.id,r.nome,r.data));
       area.appendChild(d);
     });
     av.innerHTML='';
@@ -136,9 +183,20 @@ async function atualizar(){
     document.getElementById('ativas').textContent='—';document.getElementById('pessoas').textContent='—';document.getElementById('cancelamentos').textContent='—';
   }
 }
+async function cancelarPelaEquipe(id,nome,data){
+  if(!confirm(`Confirma o cancelamento da reserva de ${nome} para ${dataBR(data)}? Essa ação libera as vagas e registra uma notificação.`))return;
+  try{
+    const resultado=await api(`/funcionarios/reservas/${encodeURIComponent(id)}/cancelar`,{method:'POST'});
+    alert(resultado.mensagem||'Reserva cancelada.');
+    await atualizar();
+    await gerarRelatorio();
+  }catch(e){alert(e.message||'Não foi possível cancelar a reserva.');}
+}
+
 async function sair(){try{await fetch('/api/funcionarios/logout',{method:'POST'});}finally{window.location.href='/login-funcionarios';}}
 function limpar(){document.getElementById('fData').value='';document.getElementById('fNome').value='';atualizar();}
 atualizar();
+gerarRelatorio();
 setInterval(atualizar,30000);
 
 </script>
