@@ -1,7 +1,7 @@
 {
   "name": "reino-do-dragao-backend",
-  "version": "1.3.0",
-  "description": "Sistema integrado de reservas com auditoria e backup/restauração",
+  "version": "1.4.0",
+  "description": "Sistema integrado de reservas com auditoria, backup e testes de regras de negócio",
   "main": "server.js",
   "scripts": {
     "start": "node server.js",
