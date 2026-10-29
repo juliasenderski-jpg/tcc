@@ -133,9 +133,7 @@ app.get('/painel-funcionarios', exigirFuncionario, (_req, res) => res.sendFile(p
 app.get('/painel-funcionarios.html', exigirFuncionario, (_req, res) => res.sendFile(path.join(__dirname, 'public', 'painel-funcionarios.html')));
 app.use(express.static(path.join(__dirname, 'public'), { index: false }));
 
-const CAPACIDADE_DIARIA = 48;
-const MAX_POR_RESERVA = 30;
-
+const { CAPACIDADE_DIARIA, MAX_POR_RESERVA, quantidadeValida, capacidadeDisponivel, cpfPodeReservar } = require('./lib/regras-negocio');
 const { cpfSoDigitos, cpfValido, dataValida, formatarDataISO } = require('./lib/validacoes');
 
 function hojeLocal() {
@@ -179,7 +177,7 @@ app.post('/api/reservas', async (req, res) => {
   if (!cpfValido(cpf)) return erro(res, 400, 'Informe um CPF válido.');
   if (telefone.length < 8 || telefone.length > 20) return erro(res, 400, 'Informe um telefone válido.');
   if (!dataValida(data) || data < hojeLocal()) return erro(res, 400, 'Escolha uma data válida de hoje em diante.');
-  if (!Number.isInteger(pessoas) || pessoas < 1 || pessoas > MAX_POR_RESERVA) {
+  if (!quantidadeValida(pessoas)) {
     return erro(res, 400, 'A reserva deve ter entre 1 e 30 pessoas.');
   }
 
@@ -206,7 +204,7 @@ app.post('/api/reservas', async (req, res) => {
         "SELECT id FROM reservas WHERE cliente_id = ? AND status = 'Confirmada' FOR UPDATE",
         [clienteId]
       );
-      if (ativas.length) {
+      if (!cpfPodeReservar(ativas.length)) {
         await conn.rollback();
         return erro(res, 409, 'Este CPF já possui uma reserva ativa. Consulte ou cancele a reserva existente antes de fazer outra.');
       }
@@ -223,7 +221,7 @@ app.post('/api/reservas', async (req, res) => {
       [data]
     );
     const total = Number(soma[0].total);
-    if (total + pessoas > CAPACIDADE_DIARIA) {
+    if (!capacidadeDisponivel(total, pessoas)) {
       await conn.rollback();
       return erro(res, 409, `Capacidade insuficiente para essa data. Já há ${total} pessoa(s) reservadas; o limite é ${CAPACIDADE_DIARIA}.`);
     }
