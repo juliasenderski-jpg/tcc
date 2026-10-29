@@ -93,3 +93,14 @@ Rotas adicionadas:
 - `PATCH /api/funcionarios/:id/status` (somente gerente)
 
 Se já houver contas cadastradas, a configuração inicial do `.env` não cria outra conta automaticamente. Para recuperar o acesso, faça a recuperação diretamente no banco de dados com cuidado. Desativar uma conta impede novos logins; sessões já abertas expiram em até quatro horas.
+
+
+## Registro de atividades / auditoria (versão 7)
+
+A versão 7 cria a tabela `auditoria` automaticamente na inicialização do servidor (e também inclui sua definição em `database.sql`). O registro guarda eventos importantes: login bem-sucedido, criação de reserva, cancelamento feito pelo cliente ou pela equipe, cadastro de funcionário e ativação/desativação de contas. As ações são registradas junto da operação correspondente quando ela ocorre dentro de uma transação; ações externas à transação são registradas após a confirmação da alteração.
+
+A seção **Registro de atividades (auditoria)** aparece somente para contas com papel `gerente`. Permite filtrar por período, funcionário/ID relacionado e tipo de ação, consultar até 500 registros e exportar CSV. A API `GET /api/auditoria` também exige papel de gerente. O registro inclui o nome do funcionário, tipo da ação, entidade, identificador, data/hora, IP e detalhes resumidos. Para reduzir exposição de dados pessoais, os detalhes de reserva guardam somente os quatro últimos dígitos do CPF, não o CPF completo. Senhas e tokens não são registrados.
+
+Para atualizar uma instalação existente, faça backup do banco e execute novamente `database.sql` (as tabelas usam `CREATE TABLE IF NOT EXISTS`) ou reinicie o servidor para que a tabela de auditoria seja criada automaticamente. Depois rode `npm install`, `npm test`, `npm run check` e `npm start`. A consulta e a gravação da auditoria precisam ser verificadas com MySQL ativo.
+
+A auditoria é voltada à demonstração escolar e não é um sistema inviolável: administradores com acesso direto ao MySQL podem alterar os registros. Em uma implantação real, restrinja as permissões do banco, mantenha backups e defina política de retenção dos logs.
