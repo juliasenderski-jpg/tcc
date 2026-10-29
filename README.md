@@ -130,3 +130,23 @@ A suíte automatizada verifica CPF, datas, quantidade mínima/máxima por reserv
 10. Gere um backup e restaure-o em um banco de teste separado, nunca diretamente no banco principal durante o primeiro teste.
 
 **Limite desta versão:** os 15 testes automatizados são testes locais de regras e validações. As operações reais de banco, autenticação HTTP, concorrência e restauração ainda precisam ser executadas no ambiente MySQL do usuário.
+
+
+## Etapa 16 — Reforços de segurança
+
+- As rotas protegidas consultam o estado atual da conta no MySQL; funcionários desativados perdem acesso imediatamente, inclusive se já possuírem cookie de sessão.
+- O papel (gerente/funcionário) é obtido do banco em cada requisição protegida, não apenas do conteúdo do cookie.
+- Respostas protegidas recebem `Cache-Control: no-store`.
+- O servidor não inicia se `SESSION_SECRET` estiver ausente, for o valor de exemplo ou tiver menos de 32 caracteres.
+- Em produção, configure HTTPS para que o cookie receba o atributo `Secure` (`NODE_ENV=production`).
+
+### Verificação
+
+Execute `npm test` e `npm run check`. Essas verificações não substituem um teste integrado com MySQL ativo e HTTPS configurado.
+
+
+## Etapa 17 — Responsividade e acessibilidade visual
+
+As páginas do cliente, login dos funcionários e painel administrativo receberam ajustes para telas menores. Os formulários usam tamanho de fonte adequado em celulares, botões com área mínima de toque, foco visível para navegação por teclado e tabelas com rolagem horizontal quando necessário. Também foram adicionadas regras para respeitar a preferência do sistema por movimento reduzido.
+
+Para verificar os arquivos após as alterações, execute `npm test` e `npm run check`. A aparência deve ser conferida em navegadores e tamanhos de tela reais.
