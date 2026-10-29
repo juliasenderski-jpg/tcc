@@ -42,11 +42,29 @@ function tokenValido(req) {
   try { const dados=JSON.parse(Buffer.from(payloadCodificado,'base64url').toString()); return dados.exp> Date.now() && dados.id ? dados : null; }
   catch { return null; }
 }
-function exigirFuncionario(req,res,next) {
-  const usuario=tokenValido(req);
-  if(usuario){ req.funcionario=usuario; return next(); }
-  if(req.path.startsWith('/api/')) return res.status(401).json({erro:'Acesso restrito aos funcionários. Faça login novamente.'});
-  return res.redirect('/login-funcionarios');
+async function exigirFuncionario(req,res,next) {
+  const sessao=tokenValido(req);
+  if (!sessao) {
+    if(req.path.startsWith('/api/')) return res.status(401).json({erro:'Acesso restrito aos funcionários. Faça login novamente.'});
+    return res.redirect('/login-funcionarios');
+  }
+  try {
+    // Confere o estado atual da conta no banco em toda requisição protegida.
+    // Assim, contas desativadas perdem acesso imediatamente, mesmo com cookie válido.
+    const [rows]=await pool.execute('SELECT id,nome,usuario,papel,ativo FROM funcionarios WHERE id=? LIMIT 1',[sessao.id]);
+    const conta=rows[0];
+    if(!conta || !conta.ativo) {
+      res.setHeader('Set-Cookie',`${COOKIE_NAME}=; HttpOnly; SameSite=Strict; Path=/; Max-Age=0${EM_PRODUCAO?'; Secure':''}`);
+      if(req.path.startsWith('/api/')) return res.status(401).json({erro:'Sua conta está desativada ou não existe mais.'});
+      return res.redirect('/login-funcionarios');
+    }
+    req.funcionario={id:conta.id,nome:conta.nome,usuario:conta.usuario,papel:conta.papel,exp:sessao.exp};
+    res.setHeader('Cache-Control','no-store');
+    return next();
+  } catch(e) {
+    console.error('Falha ao validar sessão:',e);
+    return erro(res,503,'Não foi possível validar sua sessão. Tente novamente.');
+  }
 }
 function exigirGerente(req,res,next) {
   exigirFuncionario(req,res,()=> req.funcionario?.papel==='gerente' ? next() : erro(res,403,'Somente a gerência pode administrar contas de funcionários.'));
@@ -526,4 +544,8 @@ app.get('/api/notificacoes', (req, res, next) => req.query.cpf ? next() : exigir
 });
 
 const port = Number(process.env.PORT || 3000);
+if (!SESSION_SECRET || SESSION_SECRET.startsWith('SUBSTITUA_') || SESSION_SECRET.length < 32) {
+  console.error('Configuração insegura: defina SESSION_SECRET com pelo menos 32 caracteres aleatórios no .env.');
+  process.exit(1);
+}
 prepararContaInicial().then(()=>app.listen(port,()=>console.log(`Reino do Dragão API em http://localhost:${port}`))).catch(e=>{console.error('Falha na preparação das contas de funcionários:',e.message);process.exit(1);});
