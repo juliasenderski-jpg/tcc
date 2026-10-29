@@ -8,6 +8,28 @@
 *{box-sizing:border-box}body{margin:0;min-height:100vh;font-family:Poppins,sans-serif;color:#f5e6c8;background:linear-gradient(#080504e8,#100604f5),url('https://static.wikia.nocookie.net/rpg-rise-of-the-titans/images/6/6e/DragonRed.jpg/revision/latest/scale-to-width-down/500?cb=20190222000049&path-prefix=pt-br') center/cover fixed}
 header{text-align:center;padding:38px 16px 25px;background:#100805e8;border-bottom:3px solid #8b0000}h1{font:clamp(38px,7vw,62px) MedievalSharp,cursive;color:#ffdf9d;margin:0;text-shadow:0 0 15px #8b0000}header p{font-family:Cinzel,serif;letter-spacing:2px}
 nav{display:flex;justify-content:center;gap:10px;padding:18px;flex-wrap:wrap}.wrap{width:min(900px,92%);margin:10px auto 30px}.card{background:#120c08f2;border:2px solid #7a1c00;border-radius:18px;padding:clamp(18px,4vw,32px);box-shadow:0 0 25px #ff500022}h2{font:600 25px Cinzel,serif;color:#ffcf8b;margin-top:0}label{display:block;margin:15px 0 6px;color:#f1d5a7;font-weight:600}input{width:100%;padding:12px;border-radius:9px;border:1px solid #75401e;background:#1b130f;color:#fff;font:inherit}button{padding:12px 17px;border:0;border-radius:9px;background:linear-gradient(45deg,#7a1c00,#c83a18);color:#fff;font-weight:600;cursor:pointer;margin-top:15px}button:hover{filter:brightness(1.15)}nav button{margin:0}.ativo{outline:2px solid #ffcf8b}.pagina{display:none}.pagina.ativa{display:block}.mensagem{margin-top:14px;padding:10px;border-radius:8px;white-space:pre-line}.ok{background:#16351f;color:#c9ffd4}.erro{background:#481818;color:#ffd0d0}.info{margin-top:22px;padding:16px;background:#ff780012;border-left:4px solid #a52b00;line-height:1.9}.reserva,.aviso{background:#1b120d;border-left:5px solid #d64a16;padding:16px;border-radius:10px;margin:12px 0}.reserva h3{color:#ffd89c;margin-top:0}.muted{color:#d6b98a;font-size:13px}footer{text-align:center;padding:25px;color:#c9ac80}@media(max-width:500px){nav{padding:12px}.card{padding:18px}}
+
+/* Etapa 17: responsividade e acessibilidade */
+:focus-visible{outline:3px solid #ffd89c;outline-offset:3px}
+button,input{min-height:44px}
+button{transition:filter .2s,transform .2s}
+button:active{transform:translateY(1px)}
+input:focus{border-color:#ffcf8b;box-shadow:0 0 0 3px #ffcf8b22}
+@media(max-width:600px){
+ body{background-attachment:scroll}
+ header{padding:28px 14px 18px}
+ header p{font-size:12px;letter-spacing:1px}
+ nav{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+ nav button{width:100%;font-size:14px;padding:12px 8px}
+ .wrap{width:calc(100% - 24px);margin:8px auto 22px}
+ .card{padding:18px 15px;border-radius:14px}
+ h2{font-size:21px}
+ form button{width:100%}
+ input{font-size:16px}
+ .info{font-size:13px;line-height:1.7}
+}
+@media(prefers-reduced-motion:reduce){*,*::before,*::after{scroll-behavior:auto!important;transition:none!important}}
+
 </style></head>
 <body>
 <header><h1>Reino do Dragão</h1><p>TOME CUIDADO COM O FOGO</p></header>
