@@ -6,7 +6,7 @@
 
 ## Instalação
 1. Abra o MySQL Workbench e execute `database.sql`.
-2. Edite `.env`: informe a senha do MySQL, defina um usuário e uma senha exclusivos para funcionários e configure `SESSION_SECRET` com uma chave aleatória de pelo menos 32 caracteres.
+2. Edite `.env`: informe a senha do MySQL, defina `STAFF_USER`, `STAFF_PASSWORD` (mínimo de 12 caracteres), `STAFF_NAME` e `SESSION_SECRET` (chave aleatória com pelo menos 32 caracteres). A primeira execução cria uma conta de gerente com esses dados.
 3. No terminal do VS Code, dentro desta pasta, execute `npm install`.
 4. Execute `npm run check` para verificar a sintaxe dos scripts.
 5. Inicie o sistema com `npm start`.
@@ -78,3 +78,18 @@ No painel dos funcionários, a seção **Reservas Recebidas** mostra os dados de
 No painel de funcionários, a seção **Histórico de reservas** permite filtrar por nome/CPF, intervalo de datas e situação (todas, confirmadas ou canceladas), além de exportar os resultados exibidos para CSV. A API administrativa `GET /api/historico-reservas` exige sessão de funcionário e limita cada consulta a 500 registros; refine os filtros para consultar períodos menores.
 
 Após atualizar, execute `npm install`, `npm test`, `npm run check` e `npm start`. A consulta do histórico deve ser testada com o MySQL local configurado e ligado.
+
+
+## Contas individuais de funcionários (versão 6)
+
+O sistema cria a primeira conta com papel `gerente` na inicialização, usando `STAFF_USER`, `STAFF_PASSWORD` e `STAFF_NAME` do `.env`, desde que a tabela `funcionarios` esteja vazia. As senhas são armazenadas com hash derivado por `scrypt`, nunca em texto puro.
+
+Depois de entrar com a conta gerente, use a seção **Gerenciamento de funcionários** no painel para cadastrar contas individuais, escolher entre `funcionario` e `gerente`, e ativar/desativar contas. O usuário deve ter de 4 a 30 caracteres; a senha inicial deve ter de 12 a 128 caracteres. Apenas gerentes podem administrar contas. Funcionários comuns continuam podendo acessar o painel operacional, mas não a administração de contas.
+
+Rotas adicionadas:
+- `GET /api/funcionarios/eu` (sessão autenticada)
+- `GET /api/funcionarios` (somente gerente)
+- `POST /api/funcionarios` (somente gerente)
+- `PATCH /api/funcionarios/:id/status` (somente gerente)
+
+Se já houver contas cadastradas, a configuração inicial do `.env` não cria outra conta automaticamente. Para recuperar o acesso, faça a recuperação diretamente no banco de dados com cuidado. Desativar uma conta impede novos logins; sessões já abertas expiram em até quatro horas.
