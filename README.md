@@ -105,33 +105,28 @@ Para atualizar uma instalação existente, faça backup do banco e execute novam
 
 A auditoria é voltada à demonstração escolar e não é um sistema inviolável: administradores com acesso direto ao MySQL podem alterar os registros. Em uma implantação real, restrinja as permissões do banco, mantenha backups e defina política de retenção dos logs.
 
-## Backup e restauração (Etapa 14)
+## Etapa 15 — Testes de regras de negócio
 
-É necessário ter os programas de linha de comando `mysqldump` e `mysql` instalados e disponíveis no `PATH`, além de um banco acessível com as credenciais do `.env`.
-
-### Criar backup
-
-No terminal, dentro da pasta do projeto:
+Execute:
 
 ```bash
-npm run backup
+npm test
+npm run check
 ```
 
-O arquivo `.sql` será criado na pasta `backups/`. Os arquivos de backup são ignorados pelo Git porque podem conter dados pessoais. Copie periodicamente o backup para um local seguro separado do computador.
+A suíte automatizada verifica CPF, datas, quantidade mínima/máxima por reserva, capacidade diária de 48 pessoas e a regra de uma reserva ativa por CPF. Esses testes não substituem a validação integrada com MySQL.
 
-### Restaurar um backup
+### Roteiro de teste integrado (com MySQL ativo)
 
-**Atenção:** restauração pode substituir tabelas e dados. Faça primeiro um backup atual. Feche o servidor, confirme que `DB_NAME` no `.env` é o banco correto e execute com o caminho do arquivo:
+1. Abra `/api/health` e confirme `status: ok` e `banco: conectado`.
+2. Cadastre uma reserva com CPF válido e entre 1 e 30 pessoas.
+3. Consulte a reserva pelo CPF na página do cliente.
+4. Tente cadastrar outra reserva com o mesmo CPF antes de cancelar: deve ser recusada.
+5. Cancele a reserva e confirme que o status passa para `Cancelada` e que a notificação é criada.
+6. Faça nova reserva com o mesmo CPF: deve ser aceita.
+7. Em uma data de teste vazia, cadastre reservas que somem 48 pessoas; a próxima pessoa deve ser recusada.
+8. Teste login de funcionário e gerente; confirme que apenas gerente administra contas e consulta auditoria.
+9. Confira o histórico, os relatórios e a exportação CSV.
+10. Gere um backup e restaure-o em um banco de teste separado, nunca diretamente no banco principal durante o primeiro teste.
 
-```bash
-npm run restore -- backups/arquivo-do-backup.sql --confirm
-```
-
-Substitua `arquivo-do-backup.sql` pelo nome real. O parâmetro `--confirm` é obrigatório para reduzir restaurações acidentais. Após o comando, confira tabelas e registros no MySQL Workbench antes de iniciar novamente o servidor.
-
-### Limitações importantes
-
-- Os scripts dependem dos utilitários oficiais do MySQL; não são uma cópia em tempo real.
-- Teste a restauração em um banco de teste antes de depender de um backup em produção.
-- Mantenha os arquivos `.sql` protegidos: podem conter CPFs, telefones e outros dados pessoais.
-- O backup não é considerado validado até que uma restauração seja testada e os dados conferidos.
+**Limite desta versão:** os 15 testes automatizados são testes locais de regras e validações. As operações reais de banco, autenticação HTTP, concorrência e restauração ainda precisam ser executadas no ambiente MySQL do usuário.
