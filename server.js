@@ -74,6 +74,7 @@ app.post('/api/funcionarios/login', async (req,res)=>{
     const payload=Buffer.from(JSON.stringify(dados)).toString('base64url');
     const token=`${payload}.${assinar(payload)}`;
     res.setHeader('Set-Cookie',`${COOKIE_NAME}=${encodeURIComponent(token)}; HttpOnly; SameSite=Strict; Path=/; Max-Age=${Math.floor(SESSION_MS/1000)}${EM_PRODUCAO?'; Secure':''}`);
+    await registrarAuditoria(pool, { ...req, funcionario: dados }, 'LOGIN', 'funcionario', conta.id, { usuario: conta.usuario });
     res.json({mensagem:'Login realizado.',redirecionar:'/painel-funcionarios',funcionario:{nome:conta.nome,papel:conta.papel}});
   } catch(e){console.error(e);erro(res,500,'Não foi possível realizar o login.');}
 });
@@ -86,14 +87,14 @@ app.post('/api/funcionarios',exigirGerente,async(req,res)=>{
   if(!/^[a-zA-Z0-9._-]{4,30}$/.test(usuario)) return erro(res,400,'O usuário deve ter de 4 a 30 caracteres: letras, números, ponto, hífen ou underline.');
   if(senha.length<12||senha.length>128) return erro(res,400,'A senha deve ter entre 12 e 128 caracteres.');
   if(!['gerente','funcionario'].includes(papel)) return erro(res,400,'Papel inválido.');
-  try{const hash=await hashSenha(senha);const [r]=await pool.execute('INSERT INTO funcionarios(nome,usuario,senha_hash,papel,ativo) VALUES(?,?,?,?,1)',[nome,usuario,hash,papel]);res.status(201).json({mensagem:'Funcionário cadastrado.',id:r.insertId});}
+  try{const hash=await hashSenha(senha);const [r]=await pool.execute('INSERT INTO funcionarios(nome,usuario,senha_hash,papel,ativo) VALUES(?,?,?,?,1)',[nome,usuario,hash,papel]);await registrarAuditoria(pool,req,'FUNCIONARIO_CADASTRADO','funcionario',r.insertId,{nome,usuario,papel});res.status(201).json({mensagem:'Funcionário cadastrado.',id:r.insertId});}
   catch(e){if(e.code==='ER_DUP_ENTRY')return erro(res,409,'Esse nome de usuário já está em uso.');console.error(e);erro(res,500,'Não foi possível cadastrar o funcionário.');}
 });
 app.patch('/api/funcionarios/:id/status',exigirGerente,async(req,res)=>{
   const id=Number(req.params.id), ativo=req.body.ativo;
   if(!Number.isSafeInteger(id)||id<1||typeof ativo!=='boolean')return erro(res,400,'Dados inválidos.');
   if(id===Number(req.funcionario.id)&&!ativo)return erro(res,400,'Você não pode desativar sua própria conta.');
-  try{const [r]=await pool.execute('UPDATE funcionarios SET ativo=? WHERE id=?',[ativo?1:0,id]);if(!r.affectedRows)return erro(res,404,'Funcionário não encontrado.');res.json({mensagem:ativo?'Conta ativada.':'Conta desativada.'});}
+  try{const [r]=await pool.execute('UPDATE funcionarios SET ativo=? WHERE id=?',[ativo?1:0,id]);if(!r.affectedRows)return erro(res,404,'Funcionário não encontrado.');await registrarAuditoria(pool,req,ativo?'FUNCIONARIO_ATIVADO':'FUNCIONARIO_DESATIVADO','funcionario',id,{ativo});res.json({mensagem:ativo?'Conta ativada.':'Conta desativada.'});}
   catch(e){console.error(e);erro(res,500,'Não foi possível alterar a conta.');}
 });
 async function prepararContaInicial(){
@@ -102,6 +103,21 @@ async function prepararContaInicial(){
     usuario VARCHAR(30) NOT NULL UNIQUE, senha_hash VARCHAR(200) NOT NULL,
     papel ENUM('gerente','funcionario') NOT NULL DEFAULT 'funcionario',
     ativo BOOLEAN NOT NULL DEFAULT TRUE, criado_em TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
+  )`);
+  await pool.execute(`CREATE TABLE IF NOT EXISTS auditoria (
+    id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    funcionario_id BIGINT UNSIGNED NULL,
+    funcionario_nome VARCHAR(100) NOT NULL,
+    acao VARCHAR(60) NOT NULL,
+    entidade VARCHAR(40) NOT NULL,
+    entidade_id BIGINT UNSIGNED NULL,
+    detalhes JSON NULL,
+    ip VARCHAR(45) NULL,
+    user_agent VARCHAR(255) NULL,
+    criada_em TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    INDEX idx_auditoria_data (criada_em),
+    INDEX idx_auditoria_funcionario (funcionario_id),
+    CONSTRAINT fk_auditoria_funcionario FOREIGN KEY (funcionario_id) REFERENCES funcionarios(id) ON DELETE SET NULL
   )`);
   const [rows]=await pool.execute('SELECT COUNT(*) AS total FROM funcionarios');
   if(Number(rows[0].total)===0){
@@ -128,6 +144,19 @@ function hojeLocal() {
 }
 function erro(res, status, mensagem) {
   return res.status(status).json({ erro: mensagem });
+}
+
+// Auditoria: registra ações administrativas e alterações importantes sem guardar senhas ou tokens.
+async function registrarAuditoria(conn, req, acao, entidade, entidadeId, detalhes = {}) {
+  const funcionario = req.funcionario || null;
+  const ip = String(req.ip || req.socket?.remoteAddress || '').slice(0, 45) || null;
+  const agente = String(req.headers['user-agent'] || '').slice(0, 255) || null;
+  await conn.execute(
+    `INSERT INTO auditoria (funcionario_id, funcionario_nome, acao, entidade, entidade_id, detalhes, ip, user_agent)
+     VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
+    [funcionario?.id || null, funcionario?.nome || 'Cliente', acao, entidade, entidadeId || null,
+      JSON.stringify(detalhes).slice(0, 4000), ip, agente]
+  );
 }
 
 app.get('/api/health', async (_req, res) => {
@@ -207,6 +236,7 @@ app.post('/api/reservas', async (req, res) => {
       'INSERT INTO notificacoes (reserva_id, cpf_cliente, tipo, mensagem) VALUES (?, ?, ?, ?)',
       [novaReserva.insertId, cpf, 'RESERVA', `Reserva confirmada para ${nome}, em ${data.split('-').reverse().join('/')} (${pessoas} pessoa(s)).`]
     );
+    await registrarAuditoria(conn, req, 'RESERVA_CRIADA', 'reserva', novaReserva.insertId, { cpfFinal: cpf.slice(-4), data, pessoas });
 
     await conn.commit();
     res.status(201).json({
@@ -290,6 +320,7 @@ app.post('/api/funcionarios/reservas/:id/cancelar', exigirFuncionario, async (re
       'INSERT INTO notificacoes (reserva_id, cpf_cliente, tipo, mensagem) VALUES (?, ?, ?, ?)',
       [id, r.cpf, 'CANCELAMENTO', `A reserva de ${r.nome} para ${formatarDataISO(r.data_reserva)} foi cancelada pela equipe. A capacidade foi liberada.`]
     );
+    await registrarAuditoria(conn, req, 'RESERVA_CANCELADA_EQUIPE', 'reserva', id, { cpfFinal: String(r.cpf).slice(-4), data: formatarDataISO(r.data_reserva), pessoas: Number(r.quantidade_pessoas) });
     await conn.commit();
     res.json({ mensagem: 'Reserva cancelada pela equipe. A capacidade foi liberada.' });
   } catch (e) {
@@ -389,6 +420,31 @@ app.get('/api/historico-reservas', exigirFuncionario, async (req, res) => {
   }
 });
 
+app.get('/api/auditoria', exigirGerente, async (req, res) => {
+  const inicio = req.query.inicio ? String(req.query.inicio) : '';
+  const fim = req.query.fim ? String(req.query.fim) : '';
+  const busca = String(req.query.busca || '').trim();
+  const acao = String(req.query.acao || '').trim();
+  if (inicio && !dataValida(inicio)) return erro(res, 400, 'Data inicial inválida.');
+  if (fim && !dataValida(fim)) return erro(res, 400, 'Data final inválida.');
+  if (inicio && fim && inicio > fim) return erro(res, 400, 'A data inicial não pode ser posterior à final.');
+  const where = [], params = [];
+  if (inicio) { where.push('DATE(a.criada_em) >= ?'); params.push(inicio); }
+  if (fim) { where.push('DATE(a.criada_em) <= ?'); params.push(fim); }
+  if (busca) { where.push('(a.funcionario_nome LIKE ? OR a.entidade_id = ?)'); params.push(`%${busca}%`, /^\d+$/.test(busca) ? Number(busca) : -1); }
+  if (acao) { where.push('a.acao = ?'); params.push(acao); }
+  try {
+    const [rows] = await pool.execute(
+      `SELECT a.id, a.funcionario_id AS funcionarioId, a.funcionario_nome AS funcionario,
+        a.acao, a.entidade, a.entidade_id AS entidadeId, a.detalhes,
+        a.ip, DATE_FORMAT(a.criada_em, '%Y-%m-%d %H:%i:%s') AS criadaEm
+       FROM auditoria a ${where.length ? 'WHERE ' + where.join(' AND ') : ''}
+       ORDER BY a.criada_em DESC LIMIT 500`, params
+    );
+    res.json({ resultados: rows.map(r => ({ ...r, detalhes: typeof r.detalhes === 'string' ? JSON.parse(r.detalhes || '{}') : (r.detalhes || {}) })), limite: 500 });
+  } catch (e) { console.error(e); erro(res, 500, 'Não foi possível consultar o registro de atividades.'); }
+});
+
 app.get('/api/reservas/cliente/:cpf', async (req, res) => {
   const cpf = cpfSoDigitos(req.params.cpf);
   if (!/^\d{11}$/.test(cpf)) return erro(res, 400, 'CPF inválido.');
@@ -443,6 +499,7 @@ app.delete('/api/reservas/:id', async (req, res) => {
       'INSERT INTO notificacoes (reserva_id, cpf_cliente, tipo, mensagem) VALUES (?, ?, ?, ?)',
       [id, cpf, 'CANCELAMENTO', `A reserva de ${r.nome} para ${formatarDataISO(r.data_reserva)} foi cancelada. A capacidade foi liberada.`]
     );
+    await registrarAuditoria(conn, req, 'RESERVA_CANCELADA_CLIENTE', 'reserva', id, { cpfFinal: cpf.slice(-4) });
     await conn.commit();
     res.json({ mensagem: 'Reserva cancelada. A capacidade foi liberada.' });
   } catch (e) {
