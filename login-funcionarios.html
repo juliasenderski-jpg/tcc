@@ -6,6 +6,14 @@
 <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700&family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
 *{box-sizing:border-box}body{margin:0;min-height:100vh;display:grid;place-items:center;padding:20px;font-family:Poppins,sans-serif;color:#f5e6c8;background:linear-gradient(rgba(0,0,0,.9),rgba(12,0,0,.96)),#160b08}.card{width:min(100%,430px);padding:32px;border:1px solid #8b2525;border-radius:18px;background:#1c1210;box-shadow:0 12px 40px #0008}h1{text-align:center;font:700 30px Cinzel,serif;color:#f2c98d;margin-top:0}p{text-align:center;color:#d8c2a4}label{display:block;margin:18px 0 6px}input{width:100%;padding:12px;border-radius:8px;border:1px solid #68413a;background:#100b0a;color:white;font:inherit}button{width:100%;margin-top:22px;padding:13px;border:0;border-radius:8px;background:#8b1717;color:white;font-weight:700;font:inherit;cursor:pointer}#mensagem{margin-top:14px;color:#ffb4a8;text-align:center;min-height:24px}.voltar{display:block;text-align:center;color:#f2c98d;margin-top:20px}
+
+/* Etapa 17: responsividade e acessibilidade */
+:focus-visible{outline:3px solid #ffd89c;outline-offset:3px}
+input,button{min-height:46px}
+input:focus{border-color:#ffcf8b;box-shadow:0 0 0 3px #ffcf8b22}
+@media(max-width:480px){body{padding:14px}.card{padding:24px 18px;border-radius:14px}h1{font-size:25px}button{width:100%}}
+@media(prefers-reduced-motion:reduce){*,*::before,*::after{transition:none!important}}
+
 </style></head><body><main class="card"><h1>Reino do Dragão</h1><p>Acesso restrito aos funcionários</p><form id="formLogin"><label for="usuario">Usuário</label><input id="usuario" name="usuario" autocomplete="username" required><label for="senha">Senha</label><input id="senha" name="senha" type="password" autocomplete="current-password" required><button type="submit">Entrar no painel</button><div id="mensagem" role="alert"></div></form><a class="voltar" href="/">Voltar à página do cliente</a></main><script>
 document.getElementById('formLogin').addEventListener('submit',async e=>{e.preventDefault();const mensagem=document.getElementById('mensagem');mensagem.textContent='Verificando acesso...';try{const resposta=await fetch('/api/funcionarios/login',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({usuario:document.getElementById('usuario').value,senha:document.getElementById('senha').value})});const dados=await resposta.json().catch(()=>({}));if(!resposta.ok)throw new Error(dados.erro||'Não foi possível entrar.');window.location.href=dados.redirecionar||'/painel-funcionarios';}catch(err){mensagem.textContent=err.message;}});
 </script></body></html>
