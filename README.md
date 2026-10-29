@@ -104,3 +104,34 @@ A seção **Registro de atividades (auditoria)** aparece somente para contas com
 Para atualizar uma instalação existente, faça backup do banco e execute novamente `database.sql` (as tabelas usam `CREATE TABLE IF NOT EXISTS`) ou reinicie o servidor para que a tabela de auditoria seja criada automaticamente. Depois rode `npm install`, `npm test`, `npm run check` e `npm start`. A consulta e a gravação da auditoria precisam ser verificadas com MySQL ativo.
 
 A auditoria é voltada à demonstração escolar e não é um sistema inviolável: administradores com acesso direto ao MySQL podem alterar os registros. Em uma implantação real, restrinja as permissões do banco, mantenha backups e defina política de retenção dos logs.
+
+## Backup e restauração (Etapa 14)
+
+É necessário ter os programas de linha de comando `mysqldump` e `mysql` instalados e disponíveis no `PATH`, além de um banco acessível com as credenciais do `.env`.
+
+### Criar backup
+
+No terminal, dentro da pasta do projeto:
+
+```bash
+npm run backup
+```
+
+O arquivo `.sql` será criado na pasta `backups/`. Os arquivos de backup são ignorados pelo Git porque podem conter dados pessoais. Copie periodicamente o backup para um local seguro separado do computador.
+
+### Restaurar um backup
+
+**Atenção:** restauração pode substituir tabelas e dados. Faça primeiro um backup atual. Feche o servidor, confirme que `DB_NAME` no `.env` é o banco correto e execute com o caminho do arquivo:
+
+```bash
+npm run restore -- backups/arquivo-do-backup.sql --confirm
+```
+
+Substitua `arquivo-do-backup.sql` pelo nome real. O parâmetro `--confirm` é obrigatório para reduzir restaurações acidentais. Após o comando, confira tabelas e registros no MySQL Workbench antes de iniciar novamente o servidor.
+
+### Limitações importantes
+
+- Os scripts dependem dos utilitários oficiais do MySQL; não são uma cópia em tempo real.
+- Teste a restauração em um banco de teste antes de depender de um backup em produção.
+- Mantenha os arquivos `.sql` protegidos: podem conter CPFs, telefones e outros dados pessoais.
+- O backup não é considerado validado até que uma restauração seja testada e os dados conferidos.
