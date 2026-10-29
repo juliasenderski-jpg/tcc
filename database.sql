@@ -48,3 +48,22 @@ CREATE TABLE IF NOT EXISTS funcionarios (
   ativo BOOLEAN NOT NULL DEFAULT TRUE,
   criado_em TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
+
+
+-- Registro de auditoria das ações importantes do sistema.
+CREATE TABLE IF NOT EXISTS auditoria (
+  id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+  funcionario_id BIGINT UNSIGNED NULL,
+  funcionario_nome VARCHAR(100) NOT NULL,
+  acao VARCHAR(60) NOT NULL,
+  entidade VARCHAR(40) NOT NULL,
+  entidade_id BIGINT UNSIGNED NULL,
+  detalhes JSON NULL,
+  ip VARCHAR(45) NULL,
+  user_agent VARCHAR(255) NULL,
+  criada_em TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  INDEX idx_auditoria_data (criada_em),
+  INDEX idx_auditoria_funcionario (funcionario_id),
+  CONSTRAINT fk_auditoria_funcionario FOREIGN KEY (funcionario_id)
+    REFERENCES funcionarios(id) ON DELETE SET NULL
+);
