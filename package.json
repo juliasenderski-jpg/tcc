@@ -1,7 +1,7 @@
 {
   "name": "reino-do-dragao-backend",
-  "version": "1.4.0",
-  "description": "Sistema integrado de reservas com auditoria, backup e testes de regras de negócio",
+  "version": "1.5.0",
+  "description": "Sistema integrado com validação de sessão no banco e reforços de segurança",
   "main": "server.js",
   "scripts": {
     "start": "node server.js",
