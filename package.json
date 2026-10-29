@@ -1,7 +1,7 @@
 {
   "name": "reino-do-dragao-backend",
-  "version": "1.0.0",
-  "description": "API de reservas do Restaurante Reino do Dragão",
+  "version": "1.1.0",
+  "description": "Sistema integrado de reservas com contas individuais de funcionários",
   "main": "server.js",
   "scripts": {
     "start": "node server.js",
