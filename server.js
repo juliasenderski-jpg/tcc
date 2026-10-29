@@ -15,86 +15,103 @@ app.use((_req, res, next) => {
   next();
 });
 
-// Autenticação simples para demonstração local. Configure usuário, senha e segredo no .env.
-const STAFF_USER = process.env.STAFF_USER || 'funcionario';
-const STAFF_PASSWORD = process.env.STAFF_PASSWORD || '';
+// Contas individuais de funcionários: senhas armazenadas com scrypt e sessões assinadas.
 const SESSION_SECRET = process.env.SESSION_SECRET || '';
 const COOKIE_NAME = 'rd_staff';
 const SESSION_MS = 4 * 60 * 60 * 1000;
 const loginTentativas = new Map();
 const JANELA_LOGIN_MS = 15 * 60 * 1000;
 const MAX_TENTATIVAS_LOGIN = 8;
+const EM_PRODUCAO = process.env.NODE_ENV === 'production';
 setInterval(() => {
   const agora = Date.now();
-  for (const [ip, tentativa] of loginTentativas) {
-    if (agora - tentativa.inicio > JANELA_LOGIN_MS) loginTentativas.delete(ip);
-  }
+  for (const [ip, tentativa] of loginTentativas) if (agora - tentativa.inicio > JANELA_LOGIN_MS) loginTentativas.delete(ip);
 }, JANELA_LOGIN_MS).unref();
-const EM_PRODUCAO = process.env.NODE_ENV === 'production';
 
-function assinar(valor) {
-  return crypto.createHmac('sha256', SESSION_SECRET).update(valor).digest('hex');
-}
+function assinar(valor) { return crypto.createHmac('sha256', SESSION_SECRET).update(valor).digest('hex'); }
 function tokenValido(req) {
-  if (!SESSION_SECRET || !STAFF_PASSWORD) return false;
+  if (!SESSION_SECRET || SESSION_SECRET.length < 32) return null;
   let cookies;
-  try {
-    cookies = Object.fromEntries(String(req.headers.cookie || '').split(';').map(p => p.trim()).filter(Boolean).map(p => {
-      const i = p.indexOf('='); return [p.slice(0, i), decodeURIComponent(p.slice(i + 1) || '')];
-    }));
-  } catch { return false; }
-  const token = cookies[COOKIE_NAME];
-  if (!token) return false;
-  const partes = token.split('.');
-  if (partes.length !== 3) return false;
-  const [usuarioCodificado, expiracao, assinatura] = partes;
-  const payload = `${usuarioCodificado}.${expiracao}`;
-  const esperada = assinar(payload);
-  const a = Buffer.from(assinatura);
-  const b = Buffer.from(esperada);
-  if (a.length !== b.length || !crypto.timingSafeEqual(a, b)) return false;
-  try {
-    return decodeURIComponent(Buffer.from(usuarioCodificado, 'base64url').toString()) === STAFF_USER && Number(expiracao) > Date.now();
-  } catch { return false; }
+  try { cookies = Object.fromEntries(String(req.headers.cookie || '').split(';').map(p => p.trim()).filter(Boolean).map(p => { const i=p.indexOf('='); return [p.slice(0,i), decodeURIComponent(p.slice(i+1)||'')]; })); }
+  catch { return null; }
+  const token = cookies[COOKIE_NAME]; if (!token) return null;
+  const partes=token.split('.'); if(partes.length!==2) return null;
+  const [payloadCodificado, assinatura]=partes; const esperada=assinar(payloadCodificado);
+  const a=Buffer.from(assinatura), b=Buffer.from(esperada);
+  if(a.length!==b.length || !crypto.timingSafeEqual(a,b)) return null;
+  try { const dados=JSON.parse(Buffer.from(payloadCodificado,'base64url').toString()); return dados.exp> Date.now() && dados.id ? dados : null; }
+  catch { return null; }
 }
-function exigirFuncionario(req, res, next) {
-  if (tokenValido(req)) return next();
-  if (req.path.startsWith('/api/')) return res.status(401).json({ erro: 'Acesso restrito aos funcionários. Faça login novamente.' });
+function exigirFuncionario(req,res,next) {
+  const usuario=tokenValido(req);
+  if(usuario){ req.funcionario=usuario; return next(); }
+  if(req.path.startsWith('/api/')) return res.status(401).json({erro:'Acesso restrito aos funcionários. Faça login novamente.'});
   return res.redirect('/login-funcionarios');
 }
-app.post('/api/funcionarios/login', (req, res) => {
-  const agora = Date.now();
-  const ip = String(req.ip || req.socket.remoteAddress || 'desconhecido');
-  let tentativa = loginTentativas.get(ip);
-  if (!tentativa || agora - tentativa.inicio > JANELA_LOGIN_MS) tentativa = { inicio: agora, quantidade: 0 };
-  if (tentativa.quantidade >= MAX_TENTATIVAS_LOGIN) {
-    const espera = Math.ceil((JANELA_LOGIN_MS - (agora - tentativa.inicio)) / 60000);
-    return res.status(429).json({ erro: `Muitas tentativas. Aguarde aproximadamente ${Math.max(1, espera)} minuto(s).` });
-  }
-  const usuario = String(req.body.usuario || '');
-  const senha = String(req.body.senha || '');
-  if (!STAFF_PASSWORD || !SESSION_SECRET || STAFF_PASSWORD.startsWith('DEFINA_') || STAFF_PASSWORD === 'TroqueEstaSenha123!' || SESSION_SECRET.startsWith('COLOQUE_') || SESSION_SECRET.length < 32) return res.status(503).json({ erro: 'Configure uma senha própria e um SESSION_SECRET com pelo menos 32 caracteres no arquivo .env.' });
-  const u = Buffer.from(usuario); const eu = Buffer.from(STAFF_USER);
-  const s = Buffer.from(senha); const es = Buffer.from(STAFF_PASSWORD);
-  const usuarioOk = u.length === eu.length && crypto.timingSafeEqual(u, eu);
-  const senhaOk = s.length === es.length && crypto.timingSafeEqual(s, es);
-  if (!usuarioOk || !senhaOk) {
-    tentativa.quantidade += 1;
-    loginTentativas.set(ip, tentativa);
-    return res.status(401).json({ erro: 'Usuário ou senha incorretos.' });
-  }
-  loginTentativas.delete(ip);
-  const expiracao = String(Date.now() + SESSION_MS);
-  const usuarioCodificado = Buffer.from(STAFF_USER).toString('base64url');
-  const payload = `${usuarioCodificado}.${expiracao}`;
-  const token = `${payload}.${assinar(payload)}`;
-  res.setHeader('Set-Cookie', `${COOKIE_NAME}=${encodeURIComponent(token)}; HttpOnly; SameSite=Strict; Path=/; Max-Age=${Math.floor(SESSION_MS / 1000)}${EM_PRODUCAO ? '; Secure' : ''}`);
-  res.json({ mensagem: 'Login realizado.', redirecionar: '/painel-funcionarios' });
+function exigirGerente(req,res,next) {
+  exigirFuncionario(req,res,()=> req.funcionario?.papel==='gerente' ? next() : erro(res,403,'Somente a gerência pode administrar contas de funcionários.'));
+}
+function hashSenha(senha, salt=crypto.randomBytes(16).toString('hex')) {
+  return new Promise((resolve,reject)=>crypto.scrypt(senha,salt,64,(e,key)=>e?reject(e):resolve(`${salt}:${key.toString('hex')}`)));
+}
+async function senhaConfere(senha, armazenada) {
+  if(!armazenada || !armazenada.includes(':')) return false;
+  const [salt,hash]=armazenada.split(':');
+  try { const atual=await hashSenha(senha,salt); const a=Buffer.from(atual.split(':')[1],'hex'), b=Buffer.from(hash,'hex'); return a.length===b.length && crypto.timingSafeEqual(a,b); } catch { return false; }
+}
+app.post('/api/funcionarios/login', async (req,res)=>{
+  const agora=Date.now(), ip=String(req.ip||req.socket.remoteAddress||'desconhecido');
+  let tentativa=loginTentativas.get(ip); if(!tentativa||agora-tentativa.inicio>JANELA_LOGIN_MS) tentativa={inicio:agora,quantidade:0};
+  if(tentativa.quantidade>=MAX_TENTATIVAS_LOGIN){const espera=Math.ceil((JANELA_LOGIN_MS-(agora-tentativa.inicio))/60000);return res.status(429).json({erro:`Muitas tentativas. Aguarde aproximadamente ${Math.max(1,espera)} minuto(s).`});}
+  const usuario=String(req.body.usuario||'').trim(), senha=String(req.body.senha||'');
+  if(!SESSION_SECRET || SESSION_SECRET.startsWith('COLOQUE_') || SESSION_SECRET.length<32) return erro(res,503,'Configure SESSION_SECRET com pelo menos 32 caracteres no .env.');
+  try {
+    const [rows]=await pool.execute('SELECT id,nome,usuario,senha_hash,papel FROM funcionarios WHERE usuario=? AND ativo=1 LIMIT 1',[usuario]);
+    const conta=rows[0];
+    if(!conta || !(await senhaConfere(senha,conta.senha_hash))){tentativa.quantidade++;loginTentativas.set(ip,tentativa);return erro(res,401,'Usuário ou senha incorretos.');}
+    loginTentativas.delete(ip);
+    const dados={id:conta.id,nome:conta.nome,usuario:conta.usuario,papel:conta.papel,exp:Date.now()+SESSION_MS};
+    const payload=Buffer.from(JSON.stringify(dados)).toString('base64url');
+    const token=`${payload}.${assinar(payload)}`;
+    res.setHeader('Set-Cookie',`${COOKIE_NAME}=${encodeURIComponent(token)}; HttpOnly; SameSite=Strict; Path=/; Max-Age=${Math.floor(SESSION_MS/1000)}${EM_PRODUCAO?'; Secure':''}`);
+    res.json({mensagem:'Login realizado.',redirecionar:'/painel-funcionarios',funcionario:{nome:conta.nome,papel:conta.papel}});
+  } catch(e){console.error(e);erro(res,500,'Não foi possível realizar o login.');}
 });
-app.post('/api/funcionarios/logout', (_req, res) => {
-  res.setHeader('Set-Cookie', `${COOKIE_NAME}=; HttpOnly; SameSite=Strict; Path=/; Max-Age=0${EM_PRODUCAO ? '; Secure' : ''}`);
-  res.json({ mensagem: 'Sessão encerrada.' });
+app.post('/api/funcionarios/logout',(_req,res)=>{res.setHeader('Set-Cookie',`${COOKIE_NAME}=; HttpOnly; SameSite=Strict; Path=/; Max-Age=0${EM_PRODUCAO?'; Secure':''}`);res.json({mensagem:'Sessão encerrada.'});});
+app.get('/api/funcionarios/eu',exigirFuncionario,(req,res)=>res.json({id:req.funcionario.id,nome:req.funcionario.nome,usuario:req.funcionario.usuario,papel:req.funcionario.papel}));
+app.get('/api/funcionarios',exigirGerente,async(_req,res)=>{try{const [rows]=await pool.execute('SELECT id,nome,usuario,papel,ativo,criado_em FROM funcionarios ORDER BY nome');res.json(rows);}catch(e){console.error(e);erro(res,500,'Não foi possível listar os funcionários.');}});
+app.post('/api/funcionarios',exigirGerente,async(req,res)=>{
+  const nome=String(req.body.nome||'').trim(), usuario=String(req.body.usuario||'').trim(), senha=String(req.body.senha||''), papel=String(req.body.papel||'funcionario');
+  if(nome.length<3||nome.length>100) return erro(res,400,'Informe o nome (3 a 100 caracteres).');
+  if(!/^[a-zA-Z0-9._-]{4,30}$/.test(usuario)) return erro(res,400,'O usuário deve ter de 4 a 30 caracteres: letras, números, ponto, hífen ou underline.');
+  if(senha.length<12||senha.length>128) return erro(res,400,'A senha deve ter entre 12 e 128 caracteres.');
+  if(!['gerente','funcionario'].includes(papel)) return erro(res,400,'Papel inválido.');
+  try{const hash=await hashSenha(senha);const [r]=await pool.execute('INSERT INTO funcionarios(nome,usuario,senha_hash,papel,ativo) VALUES(?,?,?,?,1)',[nome,usuario,hash,papel]);res.status(201).json({mensagem:'Funcionário cadastrado.',id:r.insertId});}
+  catch(e){if(e.code==='ER_DUP_ENTRY')return erro(res,409,'Esse nome de usuário já está em uso.');console.error(e);erro(res,500,'Não foi possível cadastrar o funcionário.');}
 });
+app.patch('/api/funcionarios/:id/status',exigirGerente,async(req,res)=>{
+  const id=Number(req.params.id), ativo=req.body.ativo;
+  if(!Number.isSafeInteger(id)||id<1||typeof ativo!=='boolean')return erro(res,400,'Dados inválidos.');
+  if(id===Number(req.funcionario.id)&&!ativo)return erro(res,400,'Você não pode desativar sua própria conta.');
+  try{const [r]=await pool.execute('UPDATE funcionarios SET ativo=? WHERE id=?',[ativo?1:0,id]);if(!r.affectedRows)return erro(res,404,'Funcionário não encontrado.');res.json({mensagem:ativo?'Conta ativada.':'Conta desativada.'});}
+  catch(e){console.error(e);erro(res,500,'Não foi possível alterar a conta.');}
+});
+async function prepararContaInicial(){
+  await pool.execute(`CREATE TABLE IF NOT EXISTS funcionarios (
+    id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY, nome VARCHAR(100) NOT NULL,
+    usuario VARCHAR(30) NOT NULL UNIQUE, senha_hash VARCHAR(200) NOT NULL,
+    papel ENUM('gerente','funcionario') NOT NULL DEFAULT 'funcionario',
+    ativo BOOLEAN NOT NULL DEFAULT TRUE, criado_em TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
+  )`);
+  const [rows]=await pool.execute('SELECT COUNT(*) AS total FROM funcionarios');
+  if(Number(rows[0].total)===0){
+    const usuario=String(process.env.STAFF_USER||'').trim(), senha=String(process.env.STAFF_PASSWORD||'');
+    if(!usuario||senha.length<12||senha.startsWith('DEFINA_')) throw new Error('Configure STAFF_USER e STAFF_PASSWORD (mínimo 12 caracteres) no .env para criar a primeira conta gerente.');
+    const hash=await hashSenha(senha);
+    await pool.execute("INSERT INTO funcionarios(nome,usuario,senha_hash,papel,ativo) VALUES(?,?,?,?,1)",[process.env.STAFF_NAME||'Gerência do Restaurante',usuario,hash,'gerente']);
+    console.log(`Conta inicial de gerência criada para o usuário: ${usuario}`);
+  }
+}
 app.get('/login-funcionarios', (_req, res) => res.sendFile(path.join(__dirname, 'public', 'login-funcionarios.html')));
 app.get('/painel-funcionarios', exigirFuncionario, (_req, res) => res.sendFile(path.join(__dirname, 'public', 'painel-funcionarios.html')));
 app.get('/painel-funcionarios.html', exigirFuncionario, (_req, res) => res.sendFile(path.join(__dirname, 'public', 'painel-funcionarios.html')));
@@ -454,4 +471,4 @@ app.get('/api/notificacoes', (req, res, next) => req.query.cpf ? next() : exigir
 });
 
 const port = Number(process.env.PORT || 3000);
-app.listen(port, () => console.log(`Reino do Dragão API em http://localhost:${port}`));
+prepararContaInicial().then(()=>app.listen(port,()=>console.log(`Reino do Dragão API em http://localhost:${port}`))).catch(e=>{console.error('Falha na preparação das contas de funcionários:',e.message);process.exit(1);});
