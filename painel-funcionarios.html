@@ -114,6 +114,33 @@ button:hover{box-shadow:0 0 18px rgba(255,80,0,.4)}
 <div id="histTabela"></div>
 </section>
 
+<section class="card" id="auditoriaCard" hidden>
+<h2>Registro de atividades (auditoria)</h2>
+<p class="sub">Área exclusiva da gerência. Consulte quem realizou ações importantes no sistema. O histórico não pode ser editado pelo painel.</p>
+<div class="filtros">
+ <div><label for="audInicio">Data inicial</label><input type="date" id="audInicio"></div>
+ <div><label for="audFim">Data final</label><input type="date" id="audFim"></div>
+ <div><label for="audBusca">Funcionário ou ID relacionado</label><input id="audBusca" placeholder="Nome ou número"></div>
+ <div><label for="audAcao">Tipo de ação</label><select id="audAcao"><option value="">Todas</option><option value="LOGIN">Login</option><option value="RESERVA_CRIADA">Reserva criada</option><option value="RESERVA_CANCELADA_CLIENTE">Cancelamento pelo cliente</option><option value="RESERVA_CANCELADA_EQUIPE">Cancelamento pela equipe</option><option value="FUNCIONARIO_CADASTRADO">Funcionário cadastrado</option><option value="FUNCIONARIO_ATIVADO">Conta ativada</option><option value="FUNCIONARIO_DESATIVADO">Conta desativada</option></select></div>
+ <div class="acoes"><button type="button" onclick="buscarAuditoria()">Pesquisar</button><button type="button" onclick="exportarAuditoria()">Exportar CSV</button></div>
+</div>
+<div id="audResumo" class="sub" style="margin:10px 0">Faça uma pesquisa para visualizar as atividades.</div>
+<div id="audTabela"></div>
+</section>
+
+<section class="card" id="gestaoFuncionarios" hidden>
+<h2>Gerenciamento de funcionários</h2>
+<p class="sub">Área exclusiva da gerência. Cadastre contas individuais e desative acessos quando necessário.</p>
+<div class="filtros">
+ <div><label for="novoNome">Nome completo</label><input id="novoNome" maxlength="100" placeholder="Nome do funcionário"></div>
+ <div><label for="novoUsuario">Usuário</label><input id="novoUsuario" maxlength="30" placeholder="Ex.: maria.silva"></div>
+ <div><label for="novaSenha">Senha inicial (mínimo 12 caracteres)</label><input id="novaSenha" type="password" minlength="12" maxlength="128"></div>
+ <div><label for="novoPapel">Permissão</label><select id="novoPapel"><option value="funcionario">Funcionário</option><option value="gerente">Gerente</option></select></div>
+ <div class="acoes"><button type="button" onclick="cadastrarFuncionario()">Cadastrar funcionário</button><button type="button" onclick="listarFuncionarios()">Atualizar lista</button></div>
+</div>
+<div id="listaFuncionarios" class="vazio">Carregando contas...</div>
+</section>
+
 <section class="card">
 <h2> Notificações</h2>
 <div id="avisos"></div>
@@ -246,6 +273,45 @@ async function cancelarPelaEquipe(id,nome,data){
 
 async function sair(){try{await fetch('/api/funcionarios/logout',{method:'POST'});}finally{window.location.href='/login-funcionarios';}}
 function limpar(){document.getElementById('fData').value='';document.getElementById('fNome').value='';atualizar();}
+let ultimoAuditoria=[];
+async function buscarAuditoria(){
+  const params=new URLSearchParams();
+  for(const [id,key] of [['audInicio','inicio'],['audFim','fim'],['audBusca','busca'],['audAcao','acao']]){const v=document.getElementById(id).value.trim();if(v)params.set(key,v);}
+  const area=document.getElementById('audTabela');area.innerHTML='<div class="vazio">Consultando atividades...</div>';
+  try{
+    const r=await api('/auditoria?'+params.toString());ultimoAuditoria=r.resultados||[];
+    document.getElementById('audResumo').textContent=`${ultimoAuditoria.length} atividade(s) encontrada(s).${ultimoAuditoria.length===r.limite?' Exibindo o limite de 500 registros; refine os filtros.':''}`;
+    if(!ultimoAuditoria.length){area.innerHTML='<div class="vazio">Nenhuma atividade encontrada.</div>';return;}
+    area.innerHTML='<div style="overflow-x:auto"><table style="width:100%;border-collapse:collapse;min-width:850px"><thead><tr>'+['Data e hora','Funcionário','Ação','Registro','Detalhes','IP'].map(x=>`<th style="text-align:left;padding:10px;border-bottom:1px solid #7a1c00">${x}</th>`).join('')+'</tr></thead><tbody>'+ultimoAuditoria.map(a=>`<tr><td style="padding:10px;border-bottom:1px solid #392317">${esc(a.criadaEm)}</td><td style="padding:10px;border-bottom:1px solid #392317">${esc(a.funcionario||'')}</td><td style="padding:10px;border-bottom:1px solid #392317">${esc(a.acao)}</td><td style="padding:10px;border-bottom:1px solid #392317">${esc(a.entidade)} #${esc(a.entidadeId||'—')}</td><td style="padding:10px;border-bottom:1px solid #392317">${esc(JSON.stringify(a.detalhes||{}))}</td><td style="padding:10px;border-bottom:1px solid #392317">${esc(a.ip||'—')}</td></tr>`).join('')+'</tbody></table></div>';
+  }catch(e){ultimoAuditoria=[];document.getElementById('audResumo').textContent='Não foi possível carregar a auditoria.';area.innerHTML=`<div class="vazio">${esc(e.message)}</div>`;}
+}
+function exportarAuditoria(){
+  if(!ultimoAuditoria.length){alert('Faça uma pesquisa com resultados antes de exportar.');return;}
+  const linhas=[['Data e hora','Funcionário','Ação','Entidade','ID','Detalhes','IP'],...ultimoAuditoria.map(a=>[a.criadaEm,a.funcionario,a.acao,a.entidade,a.entidadeId,JSON.stringify(a.detalhes||{}),a.ip])];
+  const csv='\uFEFF'+linhas.map(l=>l.map(csvCelula).join(';')).join('\r\n');const blob=new Blob([csv],{type:'text/csv;charset=utf-8;'});const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download=`auditoria-reino-do-dragao-${hojeISO()}.csv`;document.body.appendChild(a);a.click();a.remove();URL.revokeObjectURL(url);
+}
+
+async function carregarPermissoes(){
+  try{const eu=await api('/funcionarios/eu');if(eu.papel==='gerente'){document.getElementById('gestaoFuncionarios').hidden=false;document.getElementById('auditoriaCard').hidden=false;await listarFuncionarios();await buscarAuditoria();}}catch(e){console.warn('Não foi possível verificar as permissões.');}
+}
+async function listarFuncionarios(){
+  const area=document.getElementById('listaFuncionarios');if(!area)return;
+  try{const lista=await api('/funcionarios');if(!lista.length){area.innerHTML='<p>Nenhum funcionário cadastrado.</p>';return;}
+    area.innerHTML='<div class="tabela-wrap"><table><thead><tr><th>Nome</th><th>Usuário</th><th>Permissão</th><th>Situação</th><th>Ação</th></tr></thead><tbody>'+lista.map(f=>`<tr><td>${esc(f.nome)}</td><td>${esc(f.usuario)}</td><td>${esc(f.papel)}</td><td>${f.ativo?'Ativo':'Desativado'}</td><td>${f.ativo?`<button type="button" onclick="alterarStatusFuncionario(${Number(f.id)},false)">Desativar</button>`:`<button type="button" onclick="alterarStatusFuncionario(${Number(f.id)},true)">Ativar</button>`}</td></tr>`).join('')+'</tbody></table></div>';
+  }catch(e){area.textContent=e.message;}
+}
+async function cadastrarFuncionario(){
+  const dados={nome:document.getElementById('novoNome').value,usuario:document.getElementById('novoUsuario').value,senha:document.getElementById('novaSenha').value,papel:document.getElementById('novoPapel').value};
+  try{const r=await api('/funcionarios',{method:'POST',body:JSON.stringify(dados)});alert(r.mensagem);['novoNome','novoUsuario','novaSenha'].forEach(id=>document.getElementById(id).value='');await listarFuncionarios();}
+  catch(e){alert(e.message);}
+}
+async function alterarStatusFuncionario(id,ativo){
+  if(!confirm(`Confirma ${ativo?'ativar':'desativar'} esta conta?`))return;
+  try{const r=await api(`/funcionarios/${id}/status`,{method:'PATCH',body:JSON.stringify({ativo})});alert(r.mensagem);await listarFuncionarios();}
+  catch(e){alert(e.message);}
+}
+
+carregarPermissoes();
 atualizar();
 gerarRelatorio();
 setInterval(atualizar,30000);
