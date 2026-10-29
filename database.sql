@@ -36,3 +36,15 @@ CREATE TABLE IF NOT EXISTS notificacoes (
     REFERENCES reservas(id) ON DELETE SET NULL,
   INDEX idx_notificacoes_cpf (cpf_cliente)
 );
+
+
+-- Contas individuais para acesso ao painel administrativo.
+CREATE TABLE IF NOT EXISTS funcionarios (
+  id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+  nome VARCHAR(100) NOT NULL,
+  usuario VARCHAR(30) NOT NULL UNIQUE,
+  senha_hash VARCHAR(200) NOT NULL,
+  papel ENUM('gerente','funcionario') NOT NULL DEFAULT 'funcionario',
+  ativo BOOLEAN NOT NULL DEFAULT TRUE,
+  criado_em TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
+);
