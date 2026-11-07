@@ -1,359 +1,145 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Reino do Dragão | Painel dos Funcionários</title>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#120c08"><title>Reino do Dragão | Funcionários</title>
 <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=MedievalSharp&family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
 <style>
-*{box-sizing:border-box;margin:0;padding:0}
-body{
-    font-family:'Poppins',sans-serif;
-    min-height:100vh;
-    color:#f5e6c8;
-    background:
-      linear-gradient(rgba(0,0,0,.90),rgba(10,0,0,.96)),
-      url("https://static.wikia.nocookie.net/rpg-rise-of-the-titans/images/6/6e/DragonRed.jpg/revision/latest/scale-to-width-down/500?cb=20190222000049&path-prefix=pt-br");
-    background-size:cover;background-position:center;background-attachment:fixed;
-}
-header{text-align:center;padding:55px 20px 35px;background:rgba(15,5,0,.88);border-bottom:3px solid #8b0000}
-header h1{font-family:'MedievalSharp',cursive;font-size:60px;color:#ffdf9d;letter-spacing:4px;text-shadow:0 0 12px #ff7b00,0 0 25px #8b0000}
-header p{margin-top:12px;font-family:'Cinzel',serif;letter-spacing:2px;color:#f5d9b0}
-.container{width:92%;max-width:1250px;margin:auto;padding:35px 0}
-.card{background:rgba(18,12,8,.94);border:2px solid #7a1c00;border-radius:22px;padding:30px;margin-bottom:25px;box-shadow:0 0 25px rgba(255,80,0,.16)}
-h2{font-family:'Cinzel',serif;color:#ffcf8b;font-size:30px;margin-bottom:20px}
-.topo{display:flex;justify-content:space-between;align-items:center;gap:20px}
-.sub{color:#d6b98a;margin-bottom:25px}
-.indicadores{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}
-.indicador{padding:18px;text-align:center;border-radius:15px;background:rgba(255,120,0,.08);border:1px solid rgba(255,120,0,.2)}
-.indicador span{display:block;color:#d6b98a;font-size:13px;margin-bottom:7px}
-.indicador strong{font-family:'Cinzel',serif;font-size:27px;color:#ffd89c}
-.filtros{display:grid;grid-template-columns:1fr 1fr auto;gap:15px;align-items:end;margin-bottom:20px}
-label{display:block;margin-bottom:7px;font-weight:600;color:#f1d5a7}
-input{width:100%;padding:13px;border-radius:10px;border:1px solid #5c1b00;background:#1b130f;color:white;font-size:15px}
-button{padding:13px 18px;border:0;border-radius:11px;background:linear-gradient(45deg,#7a1c00,#d43c00);color:white;font-weight:bold;cursor:pointer}
-button:hover{box-shadow:0 0 18px rgba(255,80,0,.4)}
-.reserva{background:#1a120d;border-left:6px solid #ff5e00;padding:20px;border-radius:16px;margin-bottom:15px}
-.reserva h3{color:#ffd89c;margin-bottom:12px}
-.linhas{display:grid;grid-template-columns:1fr 1fr;gap:6px 20px}
-.recebido{margin-top:12px;padding-top:10px;border-top:1px solid rgba(255,120,0,.15);font-size:12px;color:#bfa57c}
-.aviso{background:rgba(255,120,0,.07);border-left:5px solid #ff6a00;padding:15px;border-radius:11px;margin-bottom:12px}
-.aviso.cancel{border-left-color:#a00000}
-.vazio{text-align:center;padding:25px;color:#d6b98a;border:1px dashed #5c1b00;border-radius:12px}
-.acoes{display:flex;gap:10px;flex-wrap:wrap}
-@media(max-width:850px){.indicadores{grid-template-columns:1fr 1fr}.filtros{grid-template-columns:1fr}.linhas{grid-template-columns:1fr}}
-@media(max-width:550px){.indicadores{grid-template-columns:1fr}.topo{flex-direction:column;align-items:stretch}}
+*{box-sizing:border-box}body{margin:0;min-height:100vh;font-family:Poppins,sans-serif;color:#f5e6c8;background:linear-gradient(#080504e8,#100604f5),url('https://static.wikia.nocookie.net/rpg-rise-of-the-titans/images/6/6e/DragonRed.jpg/revision/latest/scale-to-width-down/500?cb=20190222000049&path-prefix=pt-br') center/cover fixed}
+header{text-align:center;padding:38px 16px 25px;background:#100805e8;border-bottom:3px solid #8b0000}h1{font:clamp(38px,7vw,62px) MedievalSharp,cursive;color:#ffdf9d;margin:0;text-shadow:0 0 15px #8b0000}header p{font-family:Cinzel,serif;letter-spacing:2px}
+nav{display:flex;justify-content:center;gap:10px;padding:18px;flex-wrap:wrap}.wrap{width:min(900px,92%);margin:10px auto 30px}.card{background:#120c08f2;border:2px solid #7a1c00;border-radius:18px;padding:clamp(18px,4vw,32px);box-shadow:0 0 25px #ff500022}h2{font:600 25px Cinzel,serif;color:#ffcf8b;margin-top:0}label{display:block;margin:15px 0 6px;color:#f1d5a7;font-weight:600}input{width:100%;padding:12px;border-radius:9px;border:1px solid #75401e;background:#1b130f;color:#fff;font:inherit}button{padding:12px 17px;border:0;border-radius:9px;background:linear-gradient(45deg,#7a1c00,#c83a18);color:#fff;font-weight:600;cursor:pointer;margin-top:15px}button:hover{filter:brightness(1.15)}nav button{margin:0}.ativo{outline:2px solid #ffcf8b}.pagina{display:none}.pagina.ativa{display:block}.mensagem{margin-top:14px;padding:10px;border-radius:8px;white-space:pre-line}.ok{background:#16351f;color:#c9ffd4}.erro{background:#481818;color:#ffd0d0}.info{margin-top:22px;padding:16px;background:#ff780012;border-left:4px solid #a52b00;line-height:1.9}.reserva,.aviso{background:#1b120d;border-left:5px solid #d64a16;padding:16px;border-radius:10px;margin:12px 0}.reserva h3{color:#ffd89c;margin-top:0}.muted{color:#d6b98a;font-size:13px}footer{text-align:center;padding:25px;color:#c9ac80}@media(max-width:500px){nav{padding:12px}.card{padding:18px}}
 
-/* Etapa 17: layout adaptável para tablets e celulares */
+/* Etapa 17: responsividade e acessibilidade */
 :focus-visible{outline:3px solid #ffd89c;outline-offset:3px}
 button,input{min-height:44px}
+button{transition:filter .2s,transform .2s}
+button:active{transform:translateY(1px)}
 input:focus{border-color:#ffcf8b;box-shadow:0 0 0 3px #ffcf8b22}
-.tabela-container,.table-responsive{max-width:100%;overflow-x:auto;-webkit-overflow-scrolling:touch}
-table{width:100%;border-collapse:collapse}
-@media(max-width:900px){
- header{padding:38px 16px 26px}
- header h1{font-size:clamp(34px,7vw,52px);letter-spacing:2px}
- .container{width:94%;padding:22px 0}
- .card{padding:22px;border-radius:16px}
- h2{font-size:24px}
- .indicadores{grid-template-columns:repeat(2,minmax(0,1fr))}
- .filtros{grid-template-columns:repeat(2,minmax(0,1fr))}
- .filtros button{grid-column:1/-1}
- .topo{align-items:flex-start;flex-wrap:wrap}
-}
-@media(max-width:560px){
+@media(max-width:600px){
  body{background-attachment:scroll}
- header{padding:28px 12px 20px}
- header h1{font-size:34px;line-height:1.2}
- header p{font-size:11px;letter-spacing:1px}
- .container{width:calc(100% - 20px);padding:16px 0}
- .card{padding:16px 13px;margin-bottom:16px}
- h2{font-size:20px;margin-bottom:14px}
- .indicadores{grid-template-columns:1fr 1fr;gap:8px}
- .indicador{padding:12px 8px}
- .indicador strong{font-size:22px}
- .filtros{grid-template-columns:1fr;gap:10px}
- .filtros button{grid-column:auto;width:100%}
- button{width:100%;padding:12px}
+ header{padding:28px 14px 18px}
+ header p{font-size:12px;letter-spacing:1px}
+ nav{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+ nav button{width:100%;font-size:14px;padding:12px 8px}
+ .wrap{width:calc(100% - 24px);margin:8px auto 22px}
+ .card{padding:18px 15px;border-radius:14px}
+ h2{font-size:21px}
+ form button{width:100%}
  input{font-size:16px}
- .sub{font-size:13px}
- table{min-width:650px}
+ .info{font-size:13px;line-height:1.7}
 }
-@media(prefers-reduced-motion:reduce){*,*::before,*::after{transition:none!important}}
+@media(prefers-reduced-motion:reduce){*,*::before,*::after{scroll-behavior:auto!important;transition:none!important}}
 
-</style>
-</head>
+
+/* Sistema independente para abertura por arquivo */
+[hidden]{display:none!important}.paginacao{display:none}.paginacao.ativa{display:block}
+.painel-topo{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap}
+.filtros{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:12px;align-items:end}
+.grade-kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:12px;margin:12px 0 24px}
+.kpi{background:#2a180f;border:1px solid #75401e;border-radius:12px;padding:14px;text-align:center}
+.kpi strong{font-size:28px;display:block;color:#ffd89c}.kpi span{font-size:12px;color:#d6b98a}
+.tabela-wrap{width:100%;overflow:auto}.tabela{width:100%;border-collapse:collapse;min-width:650px}
+.tabela th,.tabela td{text-align:left;padding:10px;border-bottom:1px solid #60351d;font-size:13px}
+.botoes-linha{display:flex;gap:9px;flex-wrap:wrap}.botoes-linha button{margin:5px 0}
+.botao-pequeno{padding:8px 12px;margin:0}.botao-perigo{background:linear-gradient(45deg,#620d0d,#b42323)}
+.muted-info{color:#d6b98a;font-size:13px}.bloco{margin:16px 0}.form-inline{display:flex;gap:10px;align-items:end;flex-wrap:wrap}
+.form-inline>*{flex:1}.form-inline button{flex:0 0 auto}#areaPainel .card{margin-bottom:18px}
+@media(max-width:600px){.form-inline>*{flex:1 1 100%}.tabela{min-width:620px}}
+
+</style></head>
 <body>
-<header>
-<h1>Reino do Dragão</h1>
-<p style="margin-top:10px"><button type="button" onclick="sair()">Sair do painel</button></p>
-<p>Painel dos Funcionários</p>
-</header>
-
-<main class="container">
-<section class="card">
-<div class="topo">
-<div>
-<h2>Central de Reservas</h2>
-<p class="sub">As reservas feitas na página dos clientes aparecem automaticamente aqui.</p>
-</div>
-<div class="acoes">
-<button onclick="atualizar()"> Atualizar</button>
-<button onclick="window.location.href='/'">⚔ Página do Cliente</button>
-</div>
-</div>
-
-<div class="indicadores">
-<div class="indicador"><span>Reservas ativas</span><strong id="ativas">0</strong></div>
-<div class="indicador"><span>Pessoas reservadas</span><strong id="pessoas">0</strong></div>
-<div class="indicador"><span>Limite diário</span><strong>48</strong></div>
-<div class="indicador"><span>Cancelamentos</span><strong id="cancelamentos">0</strong></div>
-</div>
-</section>
-
-<section class="card">
-<h2>Relatório administrativo</h2>
-<p class="sub">Consulte as reservas confirmadas, pessoas previstas, cancelamentos e vagas disponíveis por data.</p>
-<div class="filtros">
-  <div><label for="relInicio">Data inicial</label><input type="date" id="relInicio"></div>
-  <div><label for="relFim">Data final</label><input type="date" id="relFim"></div>
-  <div class="acoes"><button type="button" onclick="gerarRelatorio()">Gerar relatório</button><button type="button" onclick="exportarRelatorio()">Exportar CSV</button></div>
-</div>
-<div class="indicadores">
-  <div class="indicador"><span>Reservas confirmadas</span><strong id="relReservas">—</strong></div>
-  <div class="indicador"><span>Pessoas previstas</span><strong id="relPessoas">—</strong></div>
-  <div class="indicador"><span>Reservas canceladas</span><strong id="relCanceladas">—</strong></div>
-  <div class="indicador"><span>Vagas restantes por dia</span><strong id="relVagas">—</strong></div>
-</div>
-<div id="relTabela" style="margin-top:20px"><div class="vazio">Escolha o período e gere o relatório.</div></div>
-</section>
-
-<section class="card">
-<h2>Reservas Recebidas</h2>
-<div class="filtros">
-<div><label>Data</label><input type="date" id="fData" onchange="atualizar()"></div>
-<div><label>Cliente ou CPF</label><input type="search" id="fNome" placeholder="Pesquisar nome ou CPF..." oninput="atualizar()"></div>
-<button onclick="limpar()">Limpar filtros</button>
-</div>
-<div id="reservas"></div>
-</section>
-
-<section class="card">
-<h2>Histórico de reservas</h2>
-<p class="sub">Consulte reservas confirmadas e canceladas. Por segurança, a pesquisa retorna no máximo 500 registros por consulta.</p>
-<div class="filtros">
-  <div><label for="histBusca">Nome ou CPF</label><input type="search" id="histBusca" placeholder="Pesquisar nome ou CPF"></div>
-  <div><label for="histInicio">Data inicial</label><input type="date" id="histInicio"></div>
-  <div><label for="histFim">Data final</label><input type="date" id="histFim"></div>
-  <div><label for="histStatus">Situação</label><select id="histStatus"><option value="Todos">Todas</option><option value="Confirmada">Confirmada</option><option value="Cancelada">Cancelada</option></select></div>
-  <div class="acoes"><button type="button" onclick="buscarHistorico()">Pesquisar</button><button type="button" onclick="exportarHistorico()">Exportar CSV</button><button type="button" onclick="limparHistorico()">Limpar</button></div>
-</div>
-<div id="histResumo" class="sub" style="margin:10px 0">Faça uma pesquisa para visualizar o histórico.</div>
-<div id="histTabela"></div>
-</section>
-
-<section class="card" id="auditoriaCard" hidden>
-<h2>Registro de atividades (auditoria)</h2>
-<p class="sub">Área exclusiva da gerência. Consulte quem realizou ações importantes no sistema. O histórico não pode ser editado pelo painel.</p>
-<div class="filtros">
- <div><label for="audInicio">Data inicial</label><input type="date" id="audInicio"></div>
- <div><label for="audFim">Data final</label><input type="date" id="audFim"></div>
- <div><label for="audBusca">Funcionário ou ID relacionado</label><input id="audBusca" placeholder="Nome ou número"></div>
- <div><label for="audAcao">Tipo de ação</label><select id="audAcao"><option value="">Todas</option><option value="LOGIN">Login</option><option value="RESERVA_CRIADA">Reserva criada</option><option value="RESERVA_CANCELADA_CLIENTE">Cancelamento pelo cliente</option><option value="RESERVA_CANCELADA_EQUIPE">Cancelamento pela equipe</option><option value="FUNCIONARIO_CADASTRADO">Funcionário cadastrado</option><option value="FUNCIONARIO_ATIVADO">Conta ativada</option><option value="FUNCIONARIO_DESATIVADO">Conta desativada</option></select></div>
- <div class="acoes"><button type="button" onclick="buscarAuditoria()">Pesquisar</button><button type="button" onclick="exportarAuditoria()">Exportar CSV</button></div>
-</div>
-<div id="audResumo" class="sub" style="margin:10px 0">Faça uma pesquisa para visualizar as atividades.</div>
-<div id="audTabela"></div>
-</section>
-
-<section class="card" id="gestaoFuncionarios" hidden>
-<h2>Gerenciamento de funcionários</h2>
-<p class="sub">Área exclusiva da gerência. Cadastre contas individuais e desative acessos quando necessário.</p>
-<div class="filtros">
- <div><label for="novoNome">Nome completo</label><input id="novoNome" maxlength="100" placeholder="Nome do funcionário"></div>
- <div><label for="novoUsuario">Usuário</label><input id="novoUsuario" maxlength="30" placeholder="Ex.: maria.silva"></div>
- <div><label for="novaSenha">Senha inicial (mínimo 12 caracteres)</label><input id="novaSenha" type="password" minlength="12" maxlength="128"></div>
- <div><label for="novoPapel">Permissão</label><select id="novoPapel"><option value="funcionario">Funcionário</option><option value="gerente">Gerente</option></select></div>
- <div class="acoes"><button type="button" onclick="cadastrarFuncionario()">Cadastrar funcionário</button><button type="button" onclick="listarFuncionarios()">Atualizar lista</button></div>
-</div>
-<div id="listaFuncionarios" class="vazio">Carregando contas...</div>
-</section>
-
-<section class="card">
-<h2> Notificações</h2>
-<div id="avisos"></div>
-</section>
+<header><h1>Reino do Dragão</h1><p>TOME CUIDADO COM O FOGO</p></header>
+<nav id="navCliente" aria-label="Navegação"><button id="btnReserva" class="ativo" type="button">Fazer reserva</button><button id="btnMinhas" type="button">Minha reserva</button></nav>
+<main class="wrap" id="areaCliente">
+<section id="paginaReserva" class="pagina ativa"><div class="card"><h2>Reserva de mesas</h2>
+<form id="formReserva">
+<label for="nome">Nome completo</label><input id="nome" required minlength="3" autocomplete="name">
+<label for="cpf">CPF do responsável</label><input id="cpf" required inputmode="numeric" maxlength="14" placeholder="000.000.000-00">
+<label for="telefone">Telefone</label><input id="telefone" required type="tel" autocomplete="tel">
+<label for="data">Data da reserva</label><input id="data" required type="date">
+<label for="pessoas">Quantidade de pessoas</label><input id="pessoas" required type="number" min="1" max="30">
+<button type="submit">Confirmar reserva</button>
+</form><div id="mensagem" role="status" aria-live="polite"></div>
+<div class="info"><strong>Regras do Reino</strong><br>• Máximo de 30 pessoas por reserva.<br>• O salão comporta 120 pessoas, mas o limite diário é de <strong id="limitePublico">48</strong> pessoas, definido pela gerência.<br>• Reservas para datas passadas são bloqueadas.<br>• É permitida uma reserva ativa por CPF.<br>• A reserva pode ser cancelada a qualquer momento.<br>• Guarde o código da sua reserva para futuras consultas.</div></div></section>
+<section id="paginaMinhas" class="pagina"><div class="card"><h2>Acesse sua reserva</h2><p>Informe o CPF usado no cadastro para consultar ou cancelar sua reserva.</p><form id="formLogin"><label for="cpfLogin">CPF do responsável</label><input id="cpfLogin" required inputmode="numeric" maxlength="14" placeholder="000.000.000-00"><button type="submit">Consultar minha reserva</button></form><div id="mensagemLogin" role="status" aria-live="polite"></div><div id="areaPrivada" hidden><div id="listaReservas"></div><h2>Avisos</h2><div id="listaAvisos"></div></div></div></section>
 </main>
-
+<main class="wrap" id="areaPainel" hidden>
+  <section id="telaAcesso" class="card">
+    <h2>Painel dos funcionários</h2>
+    <p class="muted-info">Acesso local às reservas deste navegador.</p>
+    <div id="configurarAcesso" hidden><label for="novaSenhaLocal">Crie um código de acesso (mínimo 6 caracteres)</label><input id="novaSenhaLocal" type="password" minlength="6" autocomplete="new-password"><button id="salvarSenhaLocal" type="button">Configurar acesso</button></div>
+    <div id="entrarAcesso" hidden><label for="senhaLocal">Código de acesso</label><input id="senhaLocal" type="password" autocomplete="current-password"><button id="loginLocal" type="button">Entrar no painel</button></div>
+    <div id="mensagemAcesso" role="status" aria-live="polite"></div>
+    <button id="voltarCliente" type="button">Ir para página dos clientes</button>
+  </section>
+  <div id="conteudoPainel" hidden>
+    <section class="card">
+      <div class="painel-topo"><div><h2>Central de reservas</h2><p class="muted-info">Reservas registradas neste navegador.</p></div><div class="botoes-linha"><button type="button" id="atualizarPainel">Atualizar</button><button type="button" id="sairPainel">Sair</button><button type="button" id="voltarCliente2">Página do cliente</button></div></div>
+      <div class="grade-kpis"><div class="kpi"><strong id="totalAtivas">0</strong><span>Reservas ativas</span></div><div class="kpi"><strong id="totalPessoas">0</strong><span>Pessoas reservadas</span></div><div class="kpi"><strong id="limiteAtual">48</strong><span>Limite por dia</span></div><div class="kpi"><strong id="totalCanceladas">0</strong><span>Cancelamentos</span></div></div>
+      <div class="filtros"><div><label for="fData">Data da reserva</label><input id="fData" type="date"></div><div><label for="fNome">Nome ou CPF</label><input id="fNome" type="search" placeholder="Pesquisar..."></div><button id="limparFiltros" type="button">Limpar filtros</button></div>
+      <div id="reservasPainel" class="bloco"></div>
+    </section>
+    <section class="card"><h2>Configurações</h2><div class="form-inline"><div><label for="limitePainel">Limite diário de pessoas (1 a 120)</label><input id="limitePainel" type="number" min="1" max="120"></div><button id="salvarLimite" type="button">Salvar limite</button></div><p id="retornoLimite" class="muted-info" role="status"></p></section>
+    <section class="card"><h2>Histórico e relatório</h2><div class="filtros"><div><label for="rInicio">Data inicial</label><input id="rInicio" type="date"></div><div><label for="rFim">Data final</label><input id="rFim" type="date"></div><button id="gerarRelatorio" type="button">Gerar relatório</button><button id="baixarCSV" type="button">Exportar CSV</button></div><div id="relatorioPainel" class="bloco"></div></section>
+    <section class="card"><h2>Notificações</h2><div id="notificacoesPainel"></div></section>
+  </div>
+</main>
+<footer>© 2026 Reino do Dragão</footer>
 <script>
-
-const API='/api';
-const esc=t=>String(t??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[c]));
-const dataBR=d=>d?String(d).slice(0,10).split('-').reverse().join('/'):'';
-const dataHora=v=>v?new Date(v).toLocaleString('pt-BR'):'';
-async function api(url, options={}){
-  const response=await fetch(`${API}${url}`, { credentials: 'same-origin', ...options, headers: { 'Content-Type':'application/json', ...(options.headers||{}) } });
-  const body=await response.json().catch(()=>({}));
-  if(!response.ok)throw new Error(body.erro||'Falha ao consultar o servidor.');
-  return body;
-}
-let ultimoRelatorio=null;
-function hojeISO(){const d=new Date();return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;}
-document.getElementById('relInicio').value=hojeISO();
-document.getElementById('relFim').value=hojeISO();
-async function gerarRelatorio(){
-  const inicio=document.getElementById('relInicio').value;
-  const fim=document.getElementById('relFim').value;
-  const area=document.getElementById('relTabela');
-  if(!inicio||!fim||inicio>fim){area.innerHTML='<div class="vazio">Informe um intervalo válido.</div>';return;}
-  area.innerHTML='<div class="vazio">Gerando relatório...</div>';
-  try{
-    const rel=await api('/relatorios/resumo?'+new URLSearchParams({inicio,fim}).toString());
-    ultimoRelatorio=rel;
-    document.getElementById('relReservas').textContent=rel.totais.reservasConfirmadas;
-    document.getElementById('relPessoas').textContent=rel.totais.pessoasConfirmadas;
-    document.getElementById('relCanceladas').textContent=rel.totais.reservasCanceladas;
-    const diasComDados=rel.dias;
-    document.getElementById('relVagas').textContent=diasComDados.length?Math.min(...diasComDados.map(d=>d.vagasRestantes)):'—';
-    if(!diasComDados.length){area.innerHTML='<div class="vazio">Não há reservas registradas nesse período.</div>';return;}
-    area.innerHTML='<div style="overflow-x:auto"><table style="width:100%;border-collapse:collapse;min-width:650px"><thead><tr><th style="text-align:left;padding:12px;border-bottom:1px solid #7a1c00">Data</th><th style="padding:12px;border-bottom:1px solid #7a1c00">Reservas ativas</th><th style="padding:12px;border-bottom:1px solid #7a1c00">Pessoas</th><th style="padding:12px;border-bottom:1px solid #7a1c00">Canceladas</th><th style="padding:12px;border-bottom:1px solid #7a1c00">Vagas restantes</th></tr></thead><tbody>'+diasComDados.map(d=>`<tr><td style="padding:12px;border-bottom:1px solid #392317">${dataBR(d.data)}</td><td style="text-align:center;padding:12px;border-bottom:1px solid #392317">${d.reservasConfirmadas}</td><td style="text-align:center;padding:12px;border-bottom:1px solid #392317">${d.pessoasConfirmadas}</td><td style="text-align:center;padding:12px;border-bottom:1px solid #392317">${d.reservasCanceladas}</td><td style="text-align:center;padding:12px;border-bottom:1px solid #392317">${d.vagasRestantes}</td></tr>`).join('')+'</tbody></table></div>';
-  }catch(e){ultimoRelatorio=null;area.innerHTML=`<div class="vazio">Não foi possível gerar o relatório. ${esc(e.message)}</div>`;}
-}
-function exportarRelatorio(){
-  if(!ultimoRelatorio){alert('Gere um relatório antes de exportar.');return;}
-  const linhas=[['Data','Reservas confirmadas','Pessoas confirmadas','Reservas canceladas','Vagas restantes'],...ultimoRelatorio.dias.map(d=>[d.data,d.reservasConfirmadas,d.pessoasConfirmadas,d.reservasCanceladas,d.vagasRestantes])];
-  const csv='\uFEFF'+linhas.map(l=>l.map(v=>'"'+String(v??'').replace(/"/g,'""')+'"').join(';')).join('\r\n');
-  const blob=new Blob([csv],{type:'text/csv;charset=utf-8;'});const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download=`relatorio-reino-do-dragao-${ultimoRelatorio.intervalo.inicio}-${ultimoRelatorio.intervalo.fim}.csv`;document.body.appendChild(a);a.click();a.remove();URL.revokeObjectURL(url);
-}
-
-let ultimoHistorico=[];
-function csvCelula(v){return '"'+String(v??'').replace(/"/g,'""')+'"';}
-async function buscarHistorico(){
-  const params=new URLSearchParams();
-  const busca=document.getElementById('histBusca').value.trim();
-  const inicio=document.getElementById('histInicio').value;
-  const fim=document.getElementById('histFim').value;
-  const status=document.getElementById('histStatus').value;
-  const tabela=document.getElementById('histTabela');
-  if(inicio&&fim&&inicio>fim){alert('A data inicial não pode ser posterior à data final.');return;}
-  if(busca){
-    const cpf=busca.replace(/\D/g,'');
-    if(/^\d+$/.test(busca.replace(/[.\-\s]/g,''))&&cpf.length!==11){alert('Para pesquisar por CPF, informe os 11 números.');return;}
-    params.set('busca',busca);
-    if(cpf.length===11)params.set('cpf',cpf);
-  }
-  if(inicio)params.set('inicio',inicio);
-  if(fim)params.set('fim',fim);
-  if(status!=='Todos')params.set('status',status);
-  tabela.innerHTML='<div class="vazio">Consultando histórico...</div>';
-  try{
-    const resposta=await api('/historico-reservas?'+params.toString());
-    ultimoHistorico=resposta.resultados||[];
-    document.getElementById('histResumo').textContent=`${ultimoHistorico.length} registro(s) encontrado(s).${ultimoHistorico.length===resposta.limite?' Exibindo o limite de 500 registros; refine os filtros para consultar outros.':''}`;
-    if(!ultimoHistorico.length){tabela.innerHTML='<div class="vazio">Nenhuma reserva encontrada com esses filtros.</div>';return;}
-    tabela.innerHTML='<div style="overflow-x:auto"><table style="width:100%;border-collapse:collapse;min-width:850px"><thead><tr>'+['ID','Cliente','CPF','Telefone','Data da reserva','Pessoas','Situação','Criada em','Cancelada em'].map(t=>`<th style="text-align:left;padding:10px;border-bottom:1px solid #7a1c00">${t}</th>`).join('')+'</tr></thead><tbody>'+ultimoHistorico.map(r=>`<tr>${[r.id,esc(r.nome),esc(r.cpf),esc(r.telefone),dataBR(r.data),Number(r.pessoas),esc(r.status),esc(r.criadaEm||''),esc(r.canceladaEm||'—')].map(v=>`<td style="padding:10px;border-bottom:1px solid #392317">${v}</td>`).join('')}</tr>`).join('')+'</tbody></table></div>';
-  }catch(e){ultimoHistorico=[];document.getElementById('histResumo').textContent='Não foi possível carregar o histórico.';tabela.innerHTML=`<div class="vazio">${esc(e.message)}</div>`;}
-}
-function exportarHistorico(){
-  if(!ultimoHistorico.length){alert('Faça uma pesquisa com resultados antes de exportar.');return;}
-  const cabecalho=['ID','Nome','CPF','Telefone','Data da reserva','Pessoas','Situação','Criada em','Cancelada em'];
-  const linhas=[cabecalho,...ultimoHistorico.map(r=>[r.id,r.nome,r.cpf,r.telefone,r.data,r.pessoas,r.status,r.criadaEm||'',r.canceladaEm||''])];
-  const csv='\uFEFF'+linhas.map(l=>l.map(csvCelula).join(';')).join('\r\n');
-  const blob=new Blob([csv],{type:'text/csv;charset=utf-8;'});const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download=`historico-reservas-reino-do-dragao-${hojeISO()}.csv`;document.body.appendChild(a);a.click();a.remove();URL.revokeObjectURL(url);
-}
-function limparHistorico(){document.getElementById('histBusca').value='';document.getElementById('histInicio').value='';document.getElementById('histFim').value='';document.getElementById('histStatus').value='Todos';buscarHistorico();}
-
-async function atualizar(){
-  const filtroData=document.getElementById('fData').value;
-  const filtroNome=document.getElementById('fNome').value.trim();
-  const area=document.getElementById('reservas'), av=document.getElementById('avisos');
-  area.innerHTML='<div class="vazio">Carregando reservas...</div>';
-  try {
-    const qs=new URLSearchParams();
-    if(filtroData)qs.set('data',filtroData);
-    if(filtroNome)qs.set('busca',filtroNome);
-    const [lista, avisos, todas]=await Promise.all([
-      api('/reservas'+(qs.toString()?'?'+qs.toString():'')),api('/notificacoes'),api('/reservas')
-    ]);
-    document.getElementById('ativas').textContent=todas.length;
-    document.getElementById('pessoas').textContent=todas.reduce((s,r)=>s+Number(r.pessoas||0),0);
-    document.getElementById('cancelamentos').textContent=avisos.filter(a=>a.tipo==='CANCELAMENTO').length;
-    area.innerHTML='';
-    if(!lista.length)area.innerHTML='<div class="vazio">Nenhuma reserva encontrada.</div>';
-    lista.forEach(r=>{
-      const d=document.createElement('div');d.className='reserva';
-      d.innerHTML=`<h3>${esc(r.nome)} — CONFIRMADA</h3><div class="linhas"><p><strong>Data:</strong> ${dataBR(r.data)}</p><p><strong>Pessoas:</strong> ${Number(r.pessoas)}</p><p><strong>CPF:</strong> ${esc(r.cpf)}</p><p><strong>Telefone:</strong> ${esc(r.telefone)}</p></div><p class="recebido">Recebida em ${dataHora(r.criadaEm)} • ID ${esc(r.id)}</p><div class="acoes" style="margin-top:14px"><button type="button" data-cancelar="${Number(r.id)}" style="background:linear-gradient(45deg,#5a0000,#a00000)">Cancelar reserva</button></div>`;
-      d.querySelector('[data-cancelar]').addEventListener('click',()=>cancelarPelaEquipe(r.id,r.nome,r.data));
-      area.appendChild(d);
-    });
-    av.innerHTML='';
-    if(!avisos.length)av.innerHTML='<div class="vazio">Nenhuma notificação registrada.</div>';
-    avisos.forEach(a=>{
-      const d=document.createElement('div');d.className='aviso'+(a.tipo==='CANCELAMENTO'?' cancel':'');
-      d.innerHTML=`<strong>${a.tipo==='CANCELAMENTO'?'❌':'🔔'} ${esc(a.tipo)}</strong><p>${esc(a.mensagem)}</p><p><strong>CPF:</strong> ${esc(a.cpf||'Não informado')}</p><p><strong>Registrado:</strong> ${dataHora(a.data)}</p>`;
-      av.appendChild(d);
-    });
-  } catch(e) {
-    area.innerHTML=`<div class="vazio">Não foi possível carregar os dados. Verifique se o servidor e o MySQL estão ligados. ${esc(e.message)}</div>`;
-    av.innerHTML='<div class="vazio">Notificações indisponíveis.</div>';
-    document.getElementById('ativas').textContent='—';document.getElementById('pessoas').textContent='—';document.getElementById('cancelamentos').textContent='—';
-  }
-}
-async function cancelarPelaEquipe(id,nome,data){
-  if(!confirm(`Confirma o cancelamento da reserva de ${nome} para ${dataBR(data)}? Essa ação libera as vagas e registra uma notificação.`))return;
-  try{
-    const resultado=await api(`/funcionarios/reservas/${encodeURIComponent(id)}/cancelar`,{method:'POST'});
-    alert(resultado.mensagem||'Reserva cancelada.');
-    await atualizar();
-    await gerarRelatorio();
-  }catch(e){alert(e.message||'Não foi possível cancelar a reserva.');}
-}
-
-async function sair(){try{await fetch('/api/funcionarios/logout',{method:'POST'});}finally{window.location.href='/login-funcionarios';}}
-function limpar(){document.getElementById('fData').value='';document.getElementById('fNome').value='';atualizar();}
-let ultimoAuditoria=[];
-async function buscarAuditoria(){
-  const params=new URLSearchParams();
-  for(const [id,key] of [['audInicio','inicio'],['audFim','fim'],['audBusca','busca'],['audAcao','acao']]){const v=document.getElementById(id).value.trim();if(v)params.set(key,v);}
-  const area=document.getElementById('audTabela');area.innerHTML='<div class="vazio">Consultando atividades...</div>';
-  try{
-    const r=await api('/auditoria?'+params.toString());ultimoAuditoria=r.resultados||[];
-    document.getElementById('audResumo').textContent=`${ultimoAuditoria.length} atividade(s) encontrada(s).${ultimoAuditoria.length===r.limite?' Exibindo o limite de 500 registros; refine os filtros.':''}`;
-    if(!ultimoAuditoria.length){area.innerHTML='<div class="vazio">Nenhuma atividade encontrada.</div>';return;}
-    area.innerHTML='<div style="overflow-x:auto"><table style="width:100%;border-collapse:collapse;min-width:850px"><thead><tr>'+['Data e hora','Funcionário','Ação','Registro','Detalhes','IP'].map(x=>`<th style="text-align:left;padding:10px;border-bottom:1px solid #7a1c00">${x}</th>`).join('')+'</tr></thead><tbody>'+ultimoAuditoria.map(a=>`<tr><td style="padding:10px;border-bottom:1px solid #392317">${esc(a.criadaEm)}</td><td style="padding:10px;border-bottom:1px solid #392317">${esc(a.funcionario||'')}</td><td style="padding:10px;border-bottom:1px solid #392317">${esc(a.acao)}</td><td style="padding:10px;border-bottom:1px solid #392317">${esc(a.entidade)} #${esc(a.entidadeId||'—')}</td><td style="padding:10px;border-bottom:1px solid #392317">${esc(JSON.stringify(a.detalhes||{}))}</td><td style="padding:10px;border-bottom:1px solid #392317">${esc(a.ip||'—')}</td></tr>`).join('')+'</tbody></table></div>';
-  }catch(e){ultimoAuditoria=[];document.getElementById('audResumo').textContent='Não foi possível carregar a auditoria.';area.innerHTML=`<div class="vazio">${esc(e.message)}</div>`;}
-}
-function exportarAuditoria(){
-  if(!ultimoAuditoria.length){alert('Faça uma pesquisa com resultados antes de exportar.');return;}
-  const linhas=[['Data e hora','Funcionário','Ação','Entidade','ID','Detalhes','IP'],...ultimoAuditoria.map(a=>[a.criadaEm,a.funcionario,a.acao,a.entidade,a.entidadeId,JSON.stringify(a.detalhes||{}),a.ip])];
-  const csv='\uFEFF'+linhas.map(l=>l.map(csvCelula).join(';')).join('\r\n');const blob=new Blob([csv],{type:'text/csv;charset=utf-8;'});const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download=`auditoria-reino-do-dragao-${hojeISO()}.csv`;document.body.appendChild(a);a.click();a.remove();URL.revokeObjectURL(url);
-}
-
-async function carregarPermissoes(){
-  try{const eu=await api('/funcionarios/eu');if(eu.papel==='gerente'){document.getElementById('gestaoFuncionarios').hidden=false;document.getElementById('auditoriaCard').hidden=false;await listarFuncionarios();await buscarAuditoria();}}catch(e){console.warn('Não foi possível verificar as permissões.');}
-}
-async function listarFuncionarios(){
-  const area=document.getElementById('listaFuncionarios');if(!area)return;
-  try{const lista=await api('/funcionarios');if(!lista.length){area.innerHTML='<p>Nenhum funcionário cadastrado.</p>';return;}
-    area.innerHTML='<div class="tabela-wrap"><table><thead><tr><th>Nome</th><th>Usuário</th><th>Permissão</th><th>Situação</th><th>Ação</th></tr></thead><tbody>'+lista.map(f=>`<tr><td>${esc(f.nome)}</td><td>${esc(f.usuario)}</td><td>${esc(f.papel)}</td><td>${f.ativo?'Ativo':'Desativado'}</td><td>${f.ativo?`<button type="button" onclick="alterarStatusFuncionario(${Number(f.id)},false)">Desativar</button>`:`<button type="button" onclick="alterarStatusFuncionario(${Number(f.id)},true)">Ativar</button>`}</td></tr>`).join('')+'</tbody></table></div>';
-  }catch(e){area.textContent=e.message;}
-}
-async function cadastrarFuncionario(){
-  const dados={nome:document.getElementById('novoNome').value,usuario:document.getElementById('novoUsuario').value,senha:document.getElementById('novaSenha').value,papel:document.getElementById('novoPapel').value};
-  try{const r=await api('/funcionarios',{method:'POST',body:JSON.stringify(dados)});alert(r.mensagem);['novoNome','novoUsuario','novaSenha'].forEach(id=>document.getElementById(id).value='');await listarFuncionarios();}
-  catch(e){alert(e.message);}
-}
-async function alterarStatusFuncionario(id,ativo){
-  if(!confirm(`Confirma ${ativo?'ativar':'desativar'} esta conta?`))return;
-  try{const r=await api(`/funcionarios/${id}/status`,{method:'PATCH',body:JSON.stringify({ativo})});alert(r.mensagem);await listarFuncionarios();}
-  catch(e){alert(e.message);}
-}
-
-carregarPermissoes();
-atualizar();
-gerarRelatorio();
-setInterval(atualizar,30000);
-
-</script>
-</body>
-</html>
+if(location.hash!=='#funcionarios')location.hash='funcionarios';
+'use strict';
+const STORAGE='reino_dragao_reservas_local_v1';
+const SETTINGS='reino_dragao_config_local_v1';
+const ACCESS='reino_dragao_acesso_local_v1';
+const digits=v=>String(v||'').replace(/\D/g,'');
+const today=()=>{const d=new Date();return [d.getFullYear(),String(d.getMonth()+1).padStart(2,'0'),String(d.getDate()).padStart(2,'0')].join('-')};
+const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const br=d=>d?String(d).slice(0,10).split('-').reverse().join('/'):'';
+const $=id=>document.getElementById(id);
+function msg(id,text,ok=false){const e=$(id);e.className='mensagem '+(ok?'ok':'erro');e.textContent=text;}
+function storeGet(key,fallback){try{const raw=localStorage.getItem(key);return raw===null?fallback:JSON.parse(raw)}catch(err){throw Error('O navegador bloqueou o armazenamento local. Verifique as permissões de armazenamento do Opera.')}}
+function storeSet(key,val){try{localStorage.setItem(key,JSON.stringify(val))}catch(err){throw Error('Não foi possível salvar no navegador. Verifique espaço e permissões de armazenamento.')}}
+function getReservas(){const a=storeGet(STORAGE,[]);return Array.isArray(a)?a:[]}
+function getConfig(){const c=storeGet(SETTINGS,{limite:48});return {limite:Number(c.limite)||48}}
+function getAcesso(){return storeGet(ACCESS,null)}
+function salvarReservas(r){storeSet(STORAGE,r);window.dispatchEvent(new Event('reservas-atualizadas'));}
+function trocarPagina(q){const admin=q==='funcionarios'||q==='login-funcionarios';$('areaCliente').hidden=admin;$('navCliente').hidden=admin;$('areaPainel').hidden=!admin;if(admin)iniciarPainel();else{switchPage(location.hash==='#minhas'?'minhas':'reserva');atualizarLimitePublico();}}
+function switchPage(which){const a=which==='reserva';$('paginaReserva').classList.toggle('ativa',a);$('paginaMinhas').classList.toggle('ativa',!a);$('btnReserva').classList.toggle('ativo',a);$('btnMinhas').classList.toggle('ativo',!a);}
+function mascaraCPF(input){input.addEventListener('input',e=>{let d=digits(e.target.value).slice(0,11);e.target.value=d.replace(/(\d{3})(\d)/,'$1.$2').replace(/(\d{3})(\d)/,'$1.$2').replace(/(\d{3})(\d{1,2})$/,'$1-$2');});}
+function cpfValido(cpf){if(!/^\d{11}$/.test(cpf)||/^(\d)\1{10}$/.test(cpf))return false;for(let t=9;t<11;t++){let soma=0;for(let i=0;i<t;i++)soma+=Number(cpf[i])*(t+1-i);let d=(soma*10)%11;if(d===10)d=0;if(d!==Number(cpf[t]))return false;}return true;}
+function atualizarLimitePublico(){$('limitePublico').textContent=getConfig().limite;}
+function criarReserva(e){e.preventDefault();let btn=e.currentTarget.querySelector('button[type="submit"]');const nome=$('nome').value.trim(),cpf=digits($('cpf').value),telefone=$('telefone').value.trim(),data=$('data').value,pessoas=Number($('pessoas').value);
+if(nome.length<3){msg('mensagem','Informe seu nome completo.');return}
+if(!cpfValido(cpf)){msg('mensagem','Informe um CPF válido.');return}
+if(digits(telefone).length<10||digits(telefone).length>11){msg('mensagem','Informe um telefone com DDD.');return}
+if(!data||data<today()){msg('mensagem','Escolha uma data de hoje em diante.');return}
+if(!Number.isInteger(pessoas)||pessoas<1||pessoas>30){msg('mensagem','Escolha de 1 a 30 pessoas.');return}
+btn.disabled=true;try{let all=getReservas();if(all.some(r=>r.cpf===cpf&&r.status==='Confirmada'))throw Error('Este CPF já possui uma reserva ativa. Consulte a opção Minha reserva.');const ocupacao=all.filter(r=>r.data===data&&r.status==='Confirmada').reduce((s,r)=>s+r.pessoas,0),limite=getConfig().limite;if(ocupacao+pessoas>limite)throw Error(`Não há vagas suficientes para esta data. Restam ${Math.max(0,limite-ocupacao)} vaga(s).`);
+const id=String(Date.now())+'-'+Math.random().toString(36).slice(2,8);all.push({id,nome,cpf,telefone,data,pessoas,status:'Confirmada',criadaEm:new Date().toISOString(),canceladaEm:null});salvarReservas(all);$('formReserva').reset();$('data').min=today();msg('mensagem',`Reserva confirmada! Código: ${id}. Consulte em Minha reserva usando seu CPF.`,true);
+}catch(err){msg('mensagem',err.message)}finally{btn.disabled=false;}}
+function minhaReserva(e){e.preventDefault();const cpf=digits($('cpfLogin').value);if(!cpfValido(cpf)){msg('mensagemLogin','Informe um CPF válido.');return}renderMinha(cpf)}
+function renderMinha(cpf){try{const all=getReservas().filter(r=>r.cpf===cpf&&r.status==='Confirmada');$('areaPrivada').hidden=false;$('listaReservas').innerHTML=all.length?all.map(r=>`<div class="reserva"><h3>Reserva confirmada</h3><p><b>Nome:</b> ${esc(r.nome)}</p><p><b>Data:</b> ${br(r.data)}</p><p><b>Pessoas:</b> ${r.pessoas}</p><p class="muted">Código: ${esc(r.id)}</p><button data-cancel="${esc(r.id)}" type="button">Cancelar reserva</button></div>`).join(''):'<div class="reserva">Nenhuma reserva ativa para este CPF.</div>';
+$('listaReservas').querySelectorAll('[data-cancel]').forEach(b=>b.onclick=()=>cancelarReserva(b.dataset.cancel,cpf));const avis=getReservas().filter(r=>r.cpf===cpf&&r.status==='Cancelada');$('listaAvisos').innerHTML=avis.length?avis.slice(-10).reverse().map(r=>`<div class="aviso">Reserva ${esc(r.id)} cancelada em ${new Date(r.canceladaEm).toLocaleString('pt-BR')}</div>`).join(''):'<p class="muted">Nenhum aviso registrado.</p>';msg('mensagemLogin','Consulta realizada.',true)}catch(err){msg('mensagemLogin',err.message)}}
+function cancelarReserva(id,cpf){if(!confirm('Deseja realmente cancelar esta reserva?'))return;try{const a=getReservas(),r=a.find(r=>r.id===id&&r.cpf===cpf&&r.status==='Confirmada');if(!r)throw Error('Reserva não encontrada.');r.status='Cancelada';r.canceladaEm=new Date().toISOString();salvarReservas(a);renderMinha(cpf);}catch(err){msg('mensagemLogin',err.message)}}
+let logado=false;
+function iniciarPainel(){if(logado){$('telaAcesso').hidden=true;$('conteudoPainel').hidden=false;atualizarPainel();return;}$('telaAcesso').hidden=false;$('conteudoPainel').hidden=true;let senha=getAcesso();$('configurarAcesso').hidden=!!senha;$('entrarAcesso').hidden=!senha;}
+async function digest(s){const b=new TextEncoder().encode(s);if(crypto?.subtle){const hash=await crypto.subtle.digest('SHA-256',b);return [...new Uint8Array(hash)].map(x=>x.toString(16).padStart(2,'0')).join('')};return 'local-'+Array.from(b).reduce((h,x)=>((h*31+x)>>>0),0).toString(16)}
+async function configurarSenha(){const senha=$('novaSenhaLocal').value;if(senha.length<6){msg('mensagemAcesso','Escolha um código de pelo menos 6 caracteres.');return;}try{storeSet(ACCESS,{hash:await digest(senha)});$('novaSenhaLocal').value='';logado=true;iniciarPainel()}catch(e){msg('mensagemAcesso',e.message)}}
+async function entrarPainel(){let conf=getAcesso();if(!conf)return iniciarPainel();if(await digest($('senhaLocal').value)!==conf.hash){msg('mensagemAcesso','Código incorreto.');return;}$('senhaLocal').value='';logado=true;iniciarPainel();}
+function sairPainel(){logado=false;iniciarPainel();}
+function atualizarPainel(){try{const all=getReservas();const ativas=all.filter(r=>r.status==='Confirmada');$('totalAtivas').textContent=ativas.length;$('totalPessoas').textContent=ativas.reduce((s,r)=>s+r.pessoas,0);$('totalCanceladas').textContent=all.length-ativas.length;$('limiteAtual').textContent=getConfig().limite;$('limitePainel').value=getConfig().limite;let data=$('fData').value,busca=$('fNome').value.toLowerCase().trim(),lista=ativas.filter(r=>(!data||r.data===data)&&(!busca||r.nome.toLowerCase().includes(busca)||(digits(busca).length>0&&r.cpf.includes(digits(busca)))));
+$('reservasPainel').innerHTML=lista.length?lista.slice().sort((a,b)=>a.data.localeCompare(b.data)).map(r=>`<div class="reserva"><h3>${esc(r.nome)} — Confirmada</h3><p><b>Data:</b> ${br(r.data)} | <b>Pessoas:</b> ${r.pessoas}</p><p><b>CPF:</b> ${esc(r.cpf)} | <b>Telefone:</b> ${esc(r.telefone)}</p><p class="muted">ID: ${esc(r.id)}</p><button class="botao-pequeno botao-perigo" data-staff-cancel="${esc(r.id)}">Cancelar reserva</button></div>`).join(''):'<div class="reserva">Nenhuma reserva encontrada.</div>';
+$('reservasPainel').querySelectorAll('[data-staff-cancel]').forEach(b=>b.onclick=()=>cancelarPeloPainel(b.dataset.staffCancel));let canceladas=all.filter(r=>r.status==='Cancelada');$('notificacoesPainel').innerHTML=canceladas.length?canceladas.slice(-20).reverse().map(r=>`<div class="aviso"><b>Cancelamento</b> — ${esc(r.nome)} (${br(r.data)})</div>`).join(''):'<p class="muted-info">Nenhuma notificação.</p>';gerarRelatorio();}catch(err){$('reservasPainel').textContent=err.message}}
+function cancelarPeloPainel(id){if(!confirm('Confirma o cancelamento desta reserva?'))return;let a=getReservas(),r=a.find(x=>x.id===id&&x.status==='Confirmada');if(!r)return;r.status='Cancelada';r.canceladaEm=new Date().toISOString();salvarReservas(a);atualizarPainel();}
+function salvarLimite(){try{const limite=Number($('limitePainel').value);if(!Number.isInteger(limite)||limite<1||limite>120)throw Error('Informe limite de 1 a 120 pessoas.');const a=getReservas();const diario={};for(const r of a.filter(x=>x.status==='Confirmada'))diario[r.data]=(diario[r.data]||0)+r.pessoas;if(Object.values(diario).some(x=>x>limite))throw Error('Há datas com reservas acima desse limite.');storeSet(SETTINGS,{limite});$('retornoLimite').textContent='Limite salvo.';atualizarPainel();}catch(e){$('retornoLimite').textContent=e.message}}
+function dadosRelatorio(){const ini=$('rInicio').value,fim=$('rFim').value;if(ini&&fim&&ini>fim)throw Error('A data inicial não pode ser posterior à final.');return getReservas().filter(r=>(!ini||r.data>=ini)&&(!fim||r.data<=fim)).sort((a,b)=>a.data.localeCompare(b.data));}
+function gerarRelatorio(){try{let a=dadosRelatorio(),confirmadas=a.filter(r=>r.status==='Confirmada'),pessoas=confirmadas.reduce((s,r)=>s+r.pessoas,0);$('relatorioPainel').innerHTML=`<p class="muted-info">${confirmadas.length} reservas ativas · ${pessoas} pessoas · ${a.length-confirmadas.length} cancelamentos.</p>`+(a.length?`<div class="tabela-wrap"><table class="tabela"><thead><tr><th>Data</th><th>Cliente</th><th>CPF</th><th>Pessoas</th><th>Status</th><th>Código</th></tr></thead><tbody>${a.map(r=>`<tr><td>${br(r.data)}</td><td>${esc(r.nome)}</td><td>${esc(r.cpf)}</td><td>${r.pessoas}</td><td>${esc(r.status)}</td><td>${esc(r.id)}</td></tr>`).join('')}</tbody></table></div>`:'');}catch(e){$('relatorioPainel').textContent=e.message}}
+function exportarCSV(){let a;try{a=dadosRelatorio()}catch(e){alert(e.message);return;}let rows=[['Código','Nome','CPF','Telefone','Data','Pessoas','Status','Criada em','Cancelada em'],...a.map(r=>[r.id,r.nome,r.cpf,r.telefone,r.data,r.pessoas,r.status,r.criadaEm,r.canceladaEm||''])];let csv='\uFEFF'+rows.map(x=>x.map(v=>'"'+String(v).replace(/"/g,'""')+'"').join(';')).join('\r\n');let blob=new Blob([csv],{type:'text/csv;charset=utf-8'}),url=URL.createObjectURL(blob),link=document.createElement('a');link.href=url;link.download='reservas-reino-do-dragao.csv';link.click();URL.revokeObjectURL(url);}
+$('btnReserva').onclick=()=>switchPage('reserva');$('btnMinhas').onclick=()=>switchPage('minhas');mascaraCPF($('cpf'));mascaraCPF($('cpfLogin'));
+$('formReserva').addEventListener('submit',criarReserva);$('formLogin').addEventListener('submit',minhaReserva);
+$('salvarSenhaLocal').onclick=configurarSenha;$('loginLocal').onclick=entrarPainel;$('sairPainel').onclick=sairPainel;
+$('voltarCliente').onclick=$('voltarCliente2').onclick=()=>location.hash='reserva';
+$('atualizarPainel').onclick=atualizarPainel;$('fData').onchange=atualizarPainel;$('fNome').oninput=atualizarPainel;
+$('limparFiltros').onclick=()=>{$('fData').value='';$('fNome').value='';atualizarPainel()};$('salvarLimite').onclick=salvarLimite;$('gerarRelatorio').onclick=gerarRelatorio;$('baixarCSV').onclick=exportarCSV;
+$('data').min=today();$('rInicio').value='';$('rFim').value='';window.addEventListener('hashchange',()=>trocarPagina(location.hash.slice(1)));window.addEventListener('storage',()=>{if(logado)atualizarPainel();atualizarLimitePublico()});trocarPagina(location.hash.slice(1));setInterval(()=>{if(logado && !$('areaPainel').hidden)atualizarPainel()},5000);
+</script></body></html>
