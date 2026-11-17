@@ -67,8 +67,18 @@ input:focus{border-color:#ffcf8b;box-shadow:0 0 0 3px #ffcf8b22}
   <section id="telaAcesso" class="card">
     <h2>Painel dos funcionários</h2>
     <p class="muted-info">Acesso local às reservas deste navegador.</p>
-    <div id="configurarAcesso" hidden><label for="novaSenhaLocal">Crie um código de acesso (mínimo 6 caracteres)</label><input id="novaSenhaLocal" type="password" minlength="6" autocomplete="new-password"><button id="salvarSenhaLocal" type="button">Configurar acesso</button></div>
-    <div id="entrarAcesso" hidden><label for="senhaLocal">Código de acesso</label><input id="senhaLocal" type="password" autocomplete="current-password"><button id="loginLocal" type="button">Entrar no painel</button></div>
+    <div id="configurarAcesso" hidden>
+      <p class="muted-info">Primeiro acesso: cadastre sua identificação e crie uma senha para a equipe.</p>
+      <label for="novoUsuarioLocal">E-mail de acesso</label><input id="novoUsuarioLocal" type="email" value="julia.sophia.senderski09@gmail.com" readonly autocomplete="username">
+      <label for="novaSenhaLocal">Crie uma senha (mínimo 6 caracteres)</label><input id="novaSenhaLocal" type="password" minlength="6" autocomplete="new-password">
+      <button id="salvarSenhaLocal" type="button">Cadastrar acesso</button>
+    </div>
+    <div id="entrarAcesso" hidden>
+      <p class="muted-info">Informe seus dados para acessar a central de reservas.</p>
+      <label for="usuarioLocal">E-mail de acesso</label><input id="usuarioLocal" type="email" value="julia.sophia.senderski09@gmail.com" readonly autocomplete="username">
+      <label for="senhaLocal">Senha</label><input id="senhaLocal" type="password" autocomplete="current-password">
+      <button id="loginLocal" type="button">Entrar no painel</button>
+    </div>
     <div id="mensagemAcesso" role="status" aria-live="polite"></div>
     <button id="voltarCliente" type="button">Ir para página dos clientes</button>
   </section>
@@ -100,7 +110,7 @@ function storeGet(key,fallback){try{const raw=localStorage.getItem(key);return r
 function storeSet(key,val){try{localStorage.setItem(key,JSON.stringify(val))}catch(err){throw Error('Não foi possível salvar no navegador. Verifique espaço e permissões de armazenamento.')}}
 function getReservas(){const a=storeGet(STORAGE,[]);return Array.isArray(a)?a:[]}
 function getConfig(){const c=storeGet(SETTINGS,{limite:48});return {limite:Number(c.limite)||48}}
-function getAcesso(){return storeGet(ACCESS,null)}
+function getAcesso(){const c=storeGet(ACCESS,null);if(c){c.username='julia.sophia.senderski09@gmail.com';}return c;}
 function salvarReservas(r){storeSet(STORAGE,r);window.dispatchEvent(new Event('reservas-atualizadas'));}
 function trocarPagina(q){const admin=q==='funcionarios'||q==='login-funcionarios';$('areaCliente').hidden=admin;$('navCliente').hidden=admin;$('areaPainel').hidden=!admin;if(admin)iniciarPainel();else{switchPage(location.hash==='#minhas'?'minhas':'reserva');atualizarLimitePublico();}}
 function switchPage(which){const a=which==='reserva';$('paginaReserva').classList.toggle('ativa',a);$('paginaMinhas').classList.toggle('ativa',!a);$('btnReserva').classList.toggle('ativo',a);$('btnMinhas').classList.toggle('ativo',!a);}
@@ -121,10 +131,10 @@ function renderMinha(cpf){try{const all=getReservas().filter(r=>r.cpf===cpf&&r.s
 $('listaReservas').querySelectorAll('[data-cancel]').forEach(b=>b.onclick=()=>cancelarReserva(b.dataset.cancel,cpf));const avis=getReservas().filter(r=>r.cpf===cpf&&r.status==='Cancelada');$('listaAvisos').innerHTML=avis.length?avis.slice(-10).reverse().map(r=>`<div class="aviso">Reserva ${esc(r.id)} cancelada em ${new Date(r.canceladaEm).toLocaleString('pt-BR')}</div>`).join(''):'<p class="muted">Nenhum aviso registrado.</p>';msg('mensagemLogin','Consulta realizada.',true)}catch(err){msg('mensagemLogin',err.message)}}
 function cancelarReserva(id,cpf){if(!confirm('Deseja realmente cancelar esta reserva?'))return;try{const a=getReservas(),r=a.find(r=>r.id===id&&r.cpf===cpf&&r.status==='Confirmada');if(!r)throw Error('Reserva não encontrada.');r.status='Cancelada';r.canceladaEm=new Date().toISOString();salvarReservas(a);renderMinha(cpf);}catch(err){msg('mensagemLogin',err.message)}}
 let logado=false;
-function iniciarPainel(){if(logado){$('telaAcesso').hidden=true;$('conteudoPainel').hidden=false;atualizarPainel();return;}$('telaAcesso').hidden=false;$('conteudoPainel').hidden=true;let senha=getAcesso();$('configurarAcesso').hidden=!!senha;$('entrarAcesso').hidden=!senha;}
+function iniciarPainel(){if(logado){$('telaAcesso').hidden=true;$('conteudoPainel').hidden=false;atualizarPainel();return;}$('telaAcesso').hidden=false;$('conteudoPainel').hidden=true;let acesso=getAcesso();$('configurarAcesso').hidden=!!acesso;$('entrarAcesso').hidden=!acesso;}
 async function digest(s){const b=new TextEncoder().encode(s);if(crypto?.subtle){const hash=await crypto.subtle.digest('SHA-256',b);return [...new Uint8Array(hash)].map(x=>x.toString(16).padStart(2,'0')).join('')};return 'local-'+Array.from(b).reduce((h,x)=>((h*31+x)>>>0),0).toString(16)}
-async function configurarSenha(){const senha=$('novaSenhaLocal').value;if(senha.length<6){msg('mensagemAcesso','Escolha um código de pelo menos 6 caracteres.');return;}try{storeSet(ACCESS,{hash:await digest(senha)});$('novaSenhaLocal').value='';logado=true;iniciarPainel()}catch(e){msg('mensagemAcesso',e.message)}}
-async function entrarPainel(){let conf=getAcesso();if(!conf)return iniciarPainel();if(await digest($('senhaLocal').value)!==conf.hash){msg('mensagemAcesso','Código incorreto.');return;}$('senhaLocal').value='';logado=true;iniciarPainel();}
+async function configurarSenha(){const usuario='julia.sophia.senderski09@gmail.com',senha=$('novaSenhaLocal').value;if(senha.length<6){msg('mensagemAcesso','Escolha uma senha de pelo menos 6 caracteres.');return;}try{storeSet(ACCESS,{username:usuario,hash:await digest(senha)});$('novoUsuarioLocal').value='';$('novaSenhaLocal').value='';logado=true;iniciarPainel()}catch(e){msg('mensagemAcesso',e.message)}}
+async function entrarPainel(){let conf=getAcesso();if(!conf)return iniciarPainel();const usuario=$('usuarioLocal').value.trim().toLowerCase(),senha=$('senhaLocal').value;if(usuario!=='julia.sophia.senderski09@gmail.com'){msg('mensagemAcesso','Utilize o e-mail autorizado para acessar.');return;}const usuarioSalvo=(conf.username||'funcionario').toLowerCase();if(usuario!==usuarioSalvo||await digest(senha)!==conf.hash){msg('mensagemAcesso','Identificação ou senha incorreta.');return;}$('usuarioLocal').value='';$('senhaLocal').value='';logado=true;iniciarPainel();}
 function sairPainel(){logado=false;iniciarPainel();}
 function atualizarPainel(){try{const all=getReservas();const ativas=all.filter(r=>r.status==='Confirmada');$('totalAtivas').textContent=ativas.length;$('totalPessoas').textContent=ativas.reduce((s,r)=>s+r.pessoas,0);$('totalCanceladas').textContent=all.length-ativas.length;$('limiteAtual').textContent=getConfig().limite;$('limitePainel').value=getConfig().limite;let data=$('fData').value,busca=$('fNome').value.toLowerCase().trim(),lista=ativas.filter(r=>(!data||r.data===data)&&(!busca||r.nome.toLowerCase().includes(busca)||(digits(busca).length>0&&r.cpf.includes(digits(busca)))));
 $('reservasPainel').innerHTML=lista.length?lista.slice().sort((a,b)=>a.data.localeCompare(b.data)).map(r=>`<div class="reserva"><h3>${esc(r.nome)} — Confirmada</h3><p><b>Data:</b> ${br(r.data)} | <b>Pessoas:</b> ${r.pessoas}</p><p><b>CPF:</b> ${esc(r.cpf)} | <b>Telefone:</b> ${esc(r.telefone)}</p><p class="muted">ID: ${esc(r.id)}</p><button class="botao-pequeno botao-perigo" data-staff-cancel="${esc(r.id)}">Cancelar reserva</button></div>`).join(''):'<div class="reserva">Nenhuma reserva encontrada.</div>';
